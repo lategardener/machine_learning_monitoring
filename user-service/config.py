@@ -1,0 +1,5 @@
+KEY = "totally-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRATION_TIME = 60
+
+

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, JSON
-from database import Base
+from db_logs.database import Base
 
 class Log(Base):
     __tablename__ = "logs"

@@ -4,7 +4,7 @@ import os
 
 DB_USER = os.getenv("POSTGRES_USER", "user")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "password")
-DB_HOST = os.getenv("POSTGRES_HOST", "postgres_userss")
+DB_HOST = os.getenv("POSTGRES_HOST", "postgres_users")
 DB_PORT = os.getenv("POSTGRES_PORT", 5432)
 DB_NAME = os.getenv("POSTGRES_DB", "users_db")
 

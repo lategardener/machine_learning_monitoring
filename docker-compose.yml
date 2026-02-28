@@ -1,0 +1,108 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+  kafka-ui:
+    image: ghcr.io/kafbat/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      - kafka
+      - zookeeper
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 5s
+      retries: 20
+
+  postgres_users:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_users_data:/var/lib/postgresql/data
+
+  postgres_logs:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: logs_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg_logs_data:/var/lib/postgresql/data
+
+  #postgres_models:
+  #  image: postgres:15
+  #  environment:
+  #    POSTGRES_USER: user
+  #    POSTGRES_PASSWORD: password
+  #    POSTGRES_DB: models_db
+  #  ports:
+  #    - "5435:5432"
+  #  volumes:
+  #    - pg_models_data:/var/lib/postgresql/data
+
+   # Services applicatifs (construits depuis les dossiers locaux)
+  user_service:
+    build: ./user-service
+    depends_on:
+      - kafka
+      - postgres_users
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DATABASE_URL: postgres://user:password@postgres_users:5432/users_db
+    ports:
+      - "8000:8000"
+
+
+  log_service:
+    build: ./log-service
+    command: python consumer.py
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DATABASE_URL: postgres://user:password@postgres_logs:5432/logs_db
+    restart: always
+
+  user_producer:
+    build: ./user-service
+    command: python producer.py
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    restart: always
+volumes:
+  pg_users_data:
+  pg_logs_data:
+  pg_models_data:
