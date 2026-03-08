@@ -2,7 +2,7 @@
 # Librairies utilisées: pytorch et tensorflow
 
 dataset:
-  name: fashion_mnist_classification
+  name: fashion_mnist
   input_shape: [1, 28, 28]
   num_classes: 10
 
@@ -19,6 +19,7 @@ training:
 
 models:
   mlp_v1:
+    description: architecture multi-layer perceptron simple
     architecture:
       type: MLP
       layers:
