@@ -19,7 +19,6 @@ from src.utils import *
 
 
 
-
 # ===================
 # CRÉATION DU MODEL #
 # ===================
@@ -73,6 +72,10 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
     # Chargement des configurations
     dataset_config, training_config, models_config = load_config(model_architecture)
 
+
+    metric = training_config.get('metrics', 'accuracy')
+    selected_metric = metric[0] if isinstance(metric, list) else metric
+
     # Chargement des données
     if model_architecture == "fashion_mnist":
         data = MNIST(root='data/', train=True, download=True, transform=transforms.ToTensor())
@@ -96,11 +99,12 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
 
     criterion = nn.CrossEntropyLoss()
 
-    # # Entraînement du modèle
+    # Entraînement du modèle
     for epoch in range(training_config['epochs']):
         start_time = time.time()
         model.train()
         train_loss = 0
+        train_correct = 0
 
         for images, labels in train_loader:
             images, labels = images.to(device), labels.to(device)
@@ -112,19 +116,37 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
             optimizer.step()
             train_loss += loss.item()
 
+            if selected_metric == 'accuracy':
+                _, predicted = torch.max(outputs.data, 1)
+                train_correct += (predicted == labels).sum().item()
+
         # Validation
         model.eval()
-        correct = 0
+        val_correct = 0
+        val_loss = 0
         with torch.no_grad():
             for images, labels in val_loader:
+                images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
-                _, predicted = torch.max(outputs.data, 1)
-                correct += (predicted == labels).sum().item()
+                loss = criterion(outputs, labels)
+                val_loss += loss.item()
+
+                if selected_metric == 'accuracy':
+                    _, predicted = torch.max(outputs.data, 1)
+                    val_correct += (predicted == labels).sum().item()
 
         epoch_time = time.time() - start_time
+
+        # Score finaux
+        t_acc = (train_correct / len(train_data)) * 100
+        v_acc = (val_correct / len(validation_data)) * 100
+
         print(f"Epoch {epoch + 1}/{training_config['epochs']} | "
+              f"Metric: {selected_metric} | "
               f"Loss: {train_loss / len(train_loader):.4f} | "
-              f"Acc: {100 * correct / 10000:.2f}% | "
+              f"Val Loss: {val_loss / len(val_loader):.4f} | "
+              f"Train {selected_metric[:3]}: {t_acc:.2f}% | "
+              f"Val {selected_metric[:3]}: {v_acc:.2f}% | "
               f"Time: {epoch_time:.2f}s")
 
 
