@@ -21,7 +21,7 @@ class TrainingLog(Base):
     model_name = Column(String, nullable=False)
 
     # Suivi de métriques
-    metrique = Column(String, nullable=False)
+    metric = Column(String, nullable=False)
     epoch = Column(Integer, nullable=False)
     train_loss = Column(Float, nullable=False)
     train_accuracy = Column(Float, nullable=False)
