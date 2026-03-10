@@ -93,7 +93,8 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
         model = create_mlp(models_config, dataset_config)
         optimizer_type = training_config['optimizer']['type']
         lr = training_config['optimizer']['learning_rate']
-        metric = training_config.get('metrics')
+        metric = training_config.get('metrics', 'accuracy')
+        selected_metric = metric[0] if isinstance(metric, list) else metric
 
         if optimizer_type == 'Adam':
             opt = tf.keras.optimizers.Adam(learning_rate=lr)
@@ -103,7 +104,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
         model.compile(
             optimizer=opt,
             loss='sparse_categorical_crossentropy',
-            metrics=metric
+            metrics=[selected_metric]
         )
 
 
