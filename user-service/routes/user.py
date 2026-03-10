@@ -82,18 +82,4 @@ async def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
     db.add(blacklisted_token)
     db.commit()
     
-    return {"detail": "Successfully logged out"}
-
-
-'''
-@router.get("/order/{order_id}")
-def get_status(order_id: int, db: Session = Depends(get_db)):
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Commande non trouvé")
-    
-    return {
-        "id": order.id,
-        "status": order.status
-    }
-'''
+    return {"detail: logout reussi"}

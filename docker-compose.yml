@@ -1,4 +1,23 @@
 services:
+
+  app:
+    build: ./front
+    container_name: app_frontend
+    ports:
+      - "5000:8000"
+    volumes:
+      - .:/front/app
+      - ./web:/app/web
+    restart: always
+
+  gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user_service
+    restart: always
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:
@@ -36,6 +55,7 @@ services:
       interval: 5s
       retries: 20
 
+
   postgres_users:
     image: postgres:15
     environment:
@@ -58,18 +78,7 @@ services:
     volumes:
       - pg_logs_data:/var/lib/postgresql/data
 
-  #postgres_models:
-  #  image: postgres:15
-  #  environment:
-  #    POSTGRES_USER: user
-  #    POSTGRES_PASSWORD: password
-  #    POSTGRES_DB: models_db
-  #  ports:
-  #    - "5435:5432"
-  #  volumes:
-  #    - pg_models_data:/var/lib/postgresql/data
 
-   # Services applicatifs (construits depuis les dossiers locaux)
   user_service:
     build: ./user-service
     depends_on:
@@ -78,9 +87,9 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       DATABASE_URL: postgres://user:password@postgres_users:5432/users_db
-    ports:
-      - "8000:8000"
-
+    volumes:
+      - ./db_user:/app/db_user
+    
 
   log_service:
     build: ./log-service
@@ -91,6 +100,8 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       DATABASE_URL: postgres://user:password@postgres_logs:5432/logs_db
+    volumes:
+      - ./db_logs:/app/db_logs
     restart: always
 
   user_producer:
@@ -101,6 +112,8 @@ services:
       - zookeeper
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ./db_user:/app/db_user
     restart: always
 volumes:
   pg_users_data:
