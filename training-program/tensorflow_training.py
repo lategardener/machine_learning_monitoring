@@ -6,6 +6,10 @@
 # CHARGEMENT DES BIBLIOTHÈQUES #
 # ==============================
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
 from torch.utils.data import random_split
@@ -21,11 +25,13 @@ from src.utils import *
 # ===================
 
 def create_mlp(model_config, dataset_config):
+
     model = models.Sequential()
+    model.add(layers.Input(shape=dataset_config['input_shape']))
     for layer_cfg in model_config['mlp_v1']['architecture']['layers']:
         l_type = layer_cfg['type'].lower()
         if l_type == 'flatten':
-            model.add(layers.Flatten(input_shape=dataset_config['input_shape']))
+            model.add(layers.Flatten())
         elif l_type == 'dense':
             model.add(layers.Dense(
                 units=layer_cfg['units'],
@@ -53,8 +59,11 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
     dataset_config, training_config, models_config = load_config(model_architecture)
 
     # Chargement des données
-    mnist_dataset = MNIST(root='data/', train=True, transform=transforms.ToTensor())
-    train_data, validation_data = random_split(mnist_dataset, [50000, 10000])
+    if model_architecture == "fashion_mnist":
+        data = MNIST(root='data/', train=True, transform=transforms.ToTensor())
+        train_data, validation_data = random_split(data, [50000, 10000])
+    else:
+        pass
 
     # Mise au format tensorflow des données d'entraînement
     train_loader = DataLoader(train_data, training_config["batch_size"], training_config["shuffle"])
@@ -64,7 +73,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
             tf.TensorSpec(shape=(None, 1, 28, 28), dtype=tf.float32),
             tf.TensorSpec(shape=(None,), dtype=tf.int64)
         )
-    )
+    ).repeat()
 
     # Mise au format tensorflow des données de validation
     val_loader = DataLoader(validation_data, training_config["batch_size"], training_config["shuffle"])
@@ -74,7 +83,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
             tf.TensorSpec(shape=(None, 1, 28, 28), dtype=tf.float32),
             tf.TensorSpec(shape=(None,), dtype=tf.int64)
         )
-    )
+    ).repeat()
 
 
     # Chargement du modèle
