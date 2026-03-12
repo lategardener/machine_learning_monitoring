@@ -16,4 +16,4 @@ numpy
 psutil
 
 # Librairie pour la communication avec Kafka
-confluent-kafka
+kafka-python
