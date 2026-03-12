@@ -1,7 +1,5 @@
 # Entraînement d'un modèle avec pytorch
 
-
-
 # ==============================
 # CHARGEMENT DES BIBLIOTHÈQUES #
 # ==============================
@@ -14,9 +12,11 @@ import torch
 import torch.nn as nn
 import time
 from torchvision.datasets import MNIST
-from src.utils import *
-
-
+import psutil
+import os
+import uuid
+from datetime import datetime
+from utils import *
 
 
 # ===================
@@ -68,6 +68,9 @@ class Model(nn.Module):
 # ===========================
 
 def train_pytorch_model(model_architecture: str = "fashion_mnist"):
+
+    # Identifiant du run d'entraînement
+    run_id = str(uuid.uuid4())
 
     # Chargement des configurations
     dataset_config, training_config, models_config = load_config(model_architecture)
@@ -135,19 +138,49 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
                     _, predicted = torch.max(outputs.data, 1)
                     val_correct += (predicted == labels).sum().item()
 
+        # Calcul des métriques de temps et d'usage des ressources
         epoch_time = time.time() - start_time
+        cpu_usage = psutil.cpu_percent(interval=0.1)
+        ram_usage = psutil.virtual_memory().percent
 
         # Score finaux
         t_acc = (train_correct / len(train_data)) * 100
         v_acc = (val_correct / len(validation_data)) * 100
 
+        train_loss = train_loss / len(train_loader)
+        val_loss = val_loss / len(val_loader)
+
+        # Données à transmettre à kafka pour l'envoi au service d'entraînement
+        log_data = {
+                    "run_id": str(uuid.uuid4()),
+                    "library": "pytorch",
+                    "dataset": dataset_config["name"],
+                    "model_name": "mlp_v1",
+                    "metric": selected_metric,
+                    "epoch": epoch + 1,
+                    "train_loss": train_loss,
+                    "train_accuracy": t_acc,
+                    "val_loss": val_loss,
+                    "val_accuracy": v_acc,
+                    "epoch_duration": epoch_time,
+                    "cpu_usage": cpu_usage,
+                    "ram_usage": ram_usage,
+                    "timestamp": datetime.now().isoformat()
+        }
+
+        # affichage des métriques
         print(f"Epoch {epoch + 1}/{training_config['epochs']} | "
               f"Metric: {selected_metric} | "
-              f"Loss: {train_loss / len(train_loader):.4f} | "
-              f"Val Loss: {val_loss / len(val_loader):.4f} | "
+              f"Loss: {train_loss:.4f} | "
+              f"Val Loss: {val_loss:.4f} | "
               f"Train {selected_metric[:3]}: {t_acc:.2f}% | "
               f"Val {selected_metric[:3]}: {v_acc:.2f}% | "
-              f"Time: {epoch_time:.2f}s")
+              f"Time: {epoch_time:.2f}s |"
+              f"CPU: {cpu_usage:.1f}% | "
+              f"RAM: {ram_usage:.1f}%"
+        )
+
+
 
 
 if __name__ == "__main__":
