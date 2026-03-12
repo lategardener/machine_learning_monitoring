@@ -1,0 +1,19 @@
+# ==============================================
+# REQUIREMENT POUR LE PROGRAMME D'ENTRAÎNEMENT #
+# ==============================================
+
+
+# Librairies de Machine Learning nécessaires pour l'entraînement des modèles
+tensorflow-cpu==2.15.0
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Librairie pour la mise en place des configurations des modèles
+pyyaml
+
+# Librairiees pour la manipulation de donnée
+numpy
+psutil
+
+# Librairie pour la communication avec Kafka
+confluent-kafka
