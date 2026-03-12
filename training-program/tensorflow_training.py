@@ -17,7 +17,12 @@ from torch.utils.data import DataLoader
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, models
-from src.utils import *
+import psutil
+import os
+import time
+import uuid
+from datetime import datetime
+from utils import *
 
 
 # ===================
@@ -56,6 +61,9 @@ def torch_to_tf_generator(loader):
 # ==============================
 
 def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
+
+    # Identifiant du run d'entraînement
+    run_id = str(uuid.uuid4())
 
     # Chargement des configurations
     dataset_config, training_config, models_config = load_config(model_architecture)
@@ -110,14 +118,59 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
 
     # Entraînement du modèle
     with tf.device('/CPU:0'):
-        history = model.fit(
-            train_dataset,
-            validation_data=val_dataset,
-            epochs=training_config['epochs'],
-            steps_per_epoch=len(train_loader),
-            validation_steps=len(val_loader)
-        )
+        # Entraînement du modèle une seule epoch à la fois pour capturer les métriques
+        for epoch in range(training_config['epochs']):
 
+            start_time = time.time()
+            history = model.fit(
+                train_dataset,
+                validation_data=val_dataset,
+                steps_per_epoch=len(train_loader),
+                validation_steps=len(val_loader),
+                verbose=-1,
+                epochs=1
+            )
+
+            # Calcul des métriques de temps et d'usage des ressources
+            epoch_time = time.time() - start_time
+            cpu_usage = psutil.cpu_percent(interval=0.1)
+            ram_usage = psutil.virtual_memory().percent
+
+            # Calcul des pertes et des scores du modèle
+            train_loss = history.history['loss'][-1]
+            train_acc = history.history[selected_metric][-1]
+            val_loss = history.history['val_loss'][-1]
+            val_acc = history.history[f'val_{selected_metric}'][-1]
+
+            # Données à transmettre à kafka pour l'envoi au service d'entraînement
+            log_data = {
+                "run_id": str(uuid.uuid4()),
+                "library": "pytorch",
+                "dataset": dataset_config["name"],
+                "model_name": "mlp_v1",
+                "metric": selected_metric,
+                "epoch": epoch + 1,
+                "train_loss": train_loss,
+                "train_accuracy": train_acc,
+                "val_loss": val_loss,
+                "val_accuracy": val_acc,
+                "epoch_duration": epoch_time,
+                "cpu_usage": cpu_usage,
+                "ram_usage": ram_usage,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # affichage des métriques
+            print(f"Epoch {epoch + 1}/{training_config['epochs']} | "
+                  f"Metric: {selected_metric} | "
+                  f"Loss: {train_loss:.4f} | "
+                  f"Val Loss: {val_loss:.4f} | "
+                  f"Train {selected_metric[:3]}: {train_acc:.2f}% | "
+                  f"Val {selected_metric[:3]}: {val_acc:.2f}% | "
+                  f"Time: {epoch_time:.2f}s |"
+                  f"CPU: {cpu_usage:.1f}% | "
+                  f"RAM: {ram_usage:.1f}%"
+                  )
 
 
 if __name__ == "__main__":
