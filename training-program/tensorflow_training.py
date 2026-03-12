@@ -23,6 +23,7 @@ import time
 import uuid
 from datetime import datetime
 from utils import *
+from kafka_utils.producer import get_producer, send_message
 
 
 # ===================
@@ -64,6 +65,9 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
 
     # Identifiant du run d'entraînement
     run_id = str(uuid.uuid4())
+
+    # Initialisation du producer kafka pour l'envoi des métriques d'entraînement
+    producer = get_producer()
 
     # Chargement des configurations
     dataset_config, training_config, models_config = load_config(model_architecture)
@@ -159,6 +163,9 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
                 "ram_usage": ram_usage,
                 "timestamp": datetime.now().isoformat()
             }
+
+            # Envoi des métriques au service kafka
+            send_message(producer, "training_metrics", log_data)
 
             # affichage des métriques
             print(f"Epoch {epoch + 1}/{training_config['epochs']} | "
