@@ -17,6 +17,8 @@ import os
 import uuid
 from datetime import datetime
 from utils import *
+from utils import *
+from kafka_utils.producer import get_producer, send_message
 
 
 # ===================
@@ -71,6 +73,9 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
 
     # Identifiant du run d'entraînement
     run_id = str(uuid.uuid4())
+
+    # Initialisation du producer kafka pour l'envoi des métriques d'entraînement
+    producer = get_producer()
 
     # Chargement des configurations
     dataset_config, training_config, models_config = load_config(model_architecture)
@@ -152,21 +157,24 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
 
         # Données à transmettre à kafka pour l'envoi au service d'entraînement
         log_data = {
-                    "run_id": str(uuid.uuid4()),
-                    "library": "pytorch",
-                    "dataset": dataset_config["name"],
-                    "model_name": "mlp_v1",
-                    "metric": selected_metric,
-                    "epoch": epoch + 1,
-                    "train_loss": train_loss,
-                    "train_accuracy": t_acc,
-                    "val_loss": val_loss,
-                    "val_accuracy": v_acc,
-                    "epoch_duration": epoch_time,
-                    "cpu_usage": cpu_usage,
-                    "ram_usage": ram_usage,
-                    "timestamp": datetime.now().isoformat()
+            "run_id": run_id,
+            "library": "pytorch",
+            "dataset": dataset_config["name"],
+            "model_name": "mlp_v1",
+            "metric": selected_metric,
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "train_accuracy": t_acc,
+            "val_loss": val_loss,
+            "val_accuracy": v_acc,
+            "epoch_duration": epoch_time,
+            "cpu_usage": cpu_usage,
+            "ram_usage": ram_usage,
+            "timestamp": datetime.now().isoformat()
         }
+
+        # Envoi des métriques au service kafka
+        send_message(producer, "training_metrics", log_data)
 
         # affichage des métriques
         print(f"Epoch {epoch + 1}/{training_config['epochs']} | "
@@ -179,8 +187,6 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
               f"CPU: {cpu_usage:.1f}% | "
               f"RAM: {ram_usage:.1f}%"
         )
-
-
 
 
 if __name__ == "__main__":
