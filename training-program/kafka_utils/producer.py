@@ -1,5 +1,5 @@
 # ===============================================
-# PRODUCER KAFKA POUR L'ENTRAÎNEMENT DES MODELS #
+# PRODUCER KAFKA POUR L'ENTRAÎNEMENT DES MODÈLES #
 # ===============================================
 
 
@@ -43,6 +43,7 @@ def get_producer():
         except Exception:
             # Le service kafka n'est pas encore pret. Nouvelle tentative après 2s
             time.sleep(2)
+            print("Nouvelle tentative")
 
 
 
