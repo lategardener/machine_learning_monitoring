@@ -10,9 +10,6 @@ class CacheItem:
 
 class SimpleCache:
     def __init__(self, ttl: int = 600):
-        """
-        ttl: durée de vie des éléments en secondes (10 minutes = 600s)
-        """
         self.ttl = ttl
         self.store = {}
 
@@ -20,7 +17,6 @@ class SimpleCache:
         item = self.store.get(key)
         if item and not item.is_expired():
             return item.value
-        # Si expiré ou absent, supprimer du cache
         if key in self.store:
             del self.store[key]
         return None

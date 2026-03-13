@@ -4,7 +4,6 @@ from kafka import KafkaConsumer
 from kafka.errors import NoBrokersAvailable
 import time
 import os
-from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from db_logs.database import SessionLocal, engine
@@ -29,7 +28,6 @@ def get_db():
         db.close()
 
 def create_log(log: LogCreate, db: Session):
-    # Crée le log
     db_log = Log(
         date=log.date,
         topic=log.topic,
@@ -38,7 +36,7 @@ def create_log(log: LogCreate, db: Session):
     db.add(db_log)
     db.commit()
     db.refresh(db_log)
-# Retry pour Kafka
+
 while True:
     try:
         consumer = KafkaConsumer(

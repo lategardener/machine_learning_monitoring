@@ -16,7 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Middleware API key
 @app.middleware("http")
 async def api_key_middleware(request: Request, call_next):
     if request.method == "OPTIONS":
@@ -35,7 +34,6 @@ async def api_key_middleware(request: Request, call_next):
 
     return await call_next(request)
 
-# Middleware rate limit
 rate_limiter = RateLimiter(interval_seconds=20)
 
 @app.middleware("http")
@@ -49,7 +47,6 @@ async def rate_limit_middleware(request: Request, call_next):
 
     client_ip = request.client.host
     if not rate_limiter.is_allowed(client_ip):
-        # Retourner une réponse JSON au lieu de lever HTTPException
         return JSONResponse(
             status_code=429,
             content={"detail": "Too Many Requests: wait 20 seconds before retrying"}

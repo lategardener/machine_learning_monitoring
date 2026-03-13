@@ -1,7 +1,6 @@
 
 async function Login(e) {
     if (e) e.preventDefault();
-    console.log("Tentative de connexion en cours...");
 
     const username = document.getElementById('username')
     const password = document.getElementById('password')
@@ -21,7 +20,15 @@ async function Login(e) {
         });
         const result = await res.json();
 
-        // Maintenant tu peux faire ton "print" (console.log)
-        console.log("Résultat reçu du backend :", result);
-    } catch (e) { console.error(e); }
+        if (res.ok) {
+            localStorage.setItem('token', result.access_token);
+            window.location.href = "/home";
+        } else {
+            const error = "Identifiants incorrects";
+            window.location.href = "/login?error=" + encodeURIComponent(error);
+        }
+
+    } catch (e) { 
+        window.location.href = "/login?error=Serveur indisponible";
+    }
 }

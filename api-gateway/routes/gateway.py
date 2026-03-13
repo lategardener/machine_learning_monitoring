@@ -14,12 +14,12 @@ class UserCreate(BaseModel):
     password: str
 
 
-@router.post("/CreateUser")
+@router.post("/createUser")
 async def create_user(user: UserCreate, api_key: bool = Depends(verify_api_key)):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                f"{USER_SERVICE_URL}/CreateUser",
+                f"{USER_SERVICE_URL}/createUser",
                 json={"username": user.username, "password": user.password}
             )
             response.raise_for_status()
@@ -43,10 +43,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), api_key: bool 
         except httpx.HTTPError as e:
             raise HTTPException(status_code=502, detail=f"Service Erreur: {str(e)}")
 
-# 3. Relais du Refresh Token (Nécessite de transférer le header d'autorisation)
 @router.post("/refresh")
 async def refresh(request: Request, api_key: bool = Depends(verify_api_key)):
-    # On récupère le token envoyé à la Gateway par le navigateur/client
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Missing Authorization header")

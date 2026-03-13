@@ -10,7 +10,7 @@ from db_user.models import TokenBlacklist
 
 router = APIRouter(prefix="/users")
 
-# Création des tables si elles n'existent pas
+
 User.metadata.create_all(bind=engine)
 
 class UserCreate(BaseModel):
@@ -24,9 +24,8 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/CreateUser")
+@router.post("/createUser")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    # Crée le user
     db_user = User(
         username=user.username,
         password=hash_password(user.password),
@@ -36,18 +35,17 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
 
-    # Ajoute dans la table outbox
     outbox_entry = Outbox(
         event_type="user.created",
         payload={
             "id": db_user.id,
             "username": db_user.username,
-            "password": db_user.password,
             "role": "client"
         }
     )
     db.add(outbox_entry)
     db.commit()
+    return {"detail: c'est good"}
     
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -77,7 +75,6 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
 
 @router.post("/logout")
 async def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db), current_user: TokenData = Depends(get_current_user)):
-    # On ajoute le token actuel dans la "liste noire"
     blacklisted_token = TokenBlacklist(token=token)
     db.add(blacklisted_token)
     db.commit()

@@ -20,7 +20,12 @@ app.mount("/static", StaticFiles(directory="web/static"), name="static")
 @app.get("/")
 async def read_index():
     return FileResponse("web/templates/index.html")
-
 @app.get("/login")
 async def read_login():
     return FileResponse("web/templates/login.html")
+@app.get("/create")
+async def read_create():
+    return FileResponse("web/templates/create.html")
+@app.get("/home")
+async def read_home():
+    return FileResponse("web/templates/home.html")
