@@ -11,7 +11,9 @@ from db_logs.models import Log
 
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 TOPICS = [
-    "user.created"
+    "user.created",
+    "user.login",
+    "user.logout",
 ]
 Log.metadata.create_all(bind=engine)
 
@@ -44,7 +46,7 @@ while True:
             bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='earliest',
-            group_id='notification_service'
+            group_id='log_service'
         )
         break
     except NoBrokersAvailable:
@@ -62,3 +64,13 @@ for message in consumer:
         db = SessionLocal()
         create_log(log,db)
         print("l'utilisateur " + payload['username'] + " à bien était créé")
+    if topic == "user.login":
+        log = Log(date=datetime.datetime.today().isoformat(), topic=topic, content=payload)
+        db = SessionLocal()
+        create_log(log,db)
+        print("l'utilisateur " + payload['username'] + " s'est connecté")
+    if topic == "user.logout":
+        log = Log(date=datetime.datetime.today().isoformat(), topic=topic, content=payload)
+        db = SessionLocal()
+        create_log(log,db)
+        print("l'utilisateur " + payload['username'] + " s'est déconnecter")

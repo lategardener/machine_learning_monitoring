@@ -40,7 +40,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         payload={
             "id": db_user.id,
             "username": db_user.username,
-            "role": "client"
+            "role": db_user.role
         }
     )
     db.add(outbox_entry)
@@ -53,6 +53,17 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Incorrect credentials")
     access_token = create_access_token(data={"username": form_data.username})
+
+    outbox_entry = Outbox(
+        event_type="user.login",
+        payload={
+            "id": user.id,
+            "username": user.username,
+            "role": user.role
+        }
+    )
+    db.add(outbox_entry)
+    db.commit()
     return Token(access_token=access_token)
 
 
@@ -78,5 +89,14 @@ async def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
     blacklisted_token = TokenBlacklist(token=token)
     db.add(blacklisted_token)
     db.commit()
-    
+
+    outbox_entry = Outbox(
+        event_type="user.logout",
+        payload={
+            "username": current_user.username,
+            "token": blacklisted_token
+        }
+    )
+    db.add(outbox_entry)
+    db.commit()
     return {"detail: logout reussi"}
