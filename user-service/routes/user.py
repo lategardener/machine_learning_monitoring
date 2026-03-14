@@ -94,7 +94,7 @@ async def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
         event_type="user.logout",
         payload={
             "username": current_user.username,
-            "token": blacklisted_token
+            "token": blacklisted_token.token
         }
     )
     db.add(outbox_entry)

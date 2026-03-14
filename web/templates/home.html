@@ -1,1 +1,14 @@
-<h1>Bienvenue sur IAAIIAAI<br>IAAIIAAI</h1>
+<h1>Bienvenue sur le site</h1>
+<button id="btn-logout">Déconnexion</button>
+
+
+<script>
+    (function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = "/login?error=" + encodeURIComponent("Veuillez vous connecter");
+        }
+    })();
+</script>
+
+<script src="./static/js/home.js"></script>
