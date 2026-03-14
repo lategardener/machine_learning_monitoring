@@ -26,11 +26,11 @@ from kafka_utils.producer import get_producer, send_message
 # ===================
 
 class Model(nn.Module):
-    def __init__(self, model_config, dataset_config):
+    def __init__(self, model_config, dataset_config, model_version):
         super().__init__()
 
         # Récupération des paramètres de configuration
-        layers_cfg = model_config['mlp_v1']['architecture']['layers']
+        layers_cfg = model_config[model_version]['architecture']['layers']
         input_shape = dataset_config['input_shape']
 
         self.layers = nn.ModuleList()
@@ -69,7 +69,7 @@ class Model(nn.Module):
 # ENTRAÎNEMENT AVEC PYTORCH #
 # ===========================
 
-def train_pytorch_model(model_architecture: str = "fashion_mnist"):
+def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version: str = "mlp_v1"):
 
     # Identifiant du run d'entraînement
     run_id = str(uuid.uuid4())
@@ -96,7 +96,7 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
 
     # Initialisation sur cpu
     device = torch.device("cpu")
-    model = Model(models_config, dataset_config).to(device)
+    model = Model(models_config, dataset_config, model_version).to(device)
 
     # Optimiseur et fonction de perte
     lr = training_config['optimizer']['learning_rate']
@@ -160,7 +160,7 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
             "run_id": run_id,
             "library": "pytorch",
             "dataset": dataset_config["name"],
-            "model_name": "mlp_v1",
+            "model_name": model_version,
             "metric": selected_metric,
             "epoch": epoch + 1,
             "train_loss": train_loss,
@@ -190,4 +190,4 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist"):
 
 
 if __name__ == "__main__":
-    train_pytorch_model("fashion_mnist")
+    train_pytorch_model("fashion_mnist", "mlp_v1")

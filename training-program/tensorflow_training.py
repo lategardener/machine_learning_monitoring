@@ -30,11 +30,11 @@ from kafka_utils.producer import get_producer, send_message
 # CRÉATION DU MODEL #
 # ===================
 
-def create_mlp(model_config, dataset_config):
+def create_mlp(model_config, dataset_config, model_version):
 
     model = models.Sequential()
     model.add(layers.Input(shape=dataset_config['input_shape']))
-    for layer_cfg in model_config['mlp_v1']['architecture']['layers']:
+    for layer_cfg in model_config[model_version]['architecture']['layers']:
         l_type = layer_cfg['type'].lower()
         if l_type == 'flatten':
             model.add(layers.Flatten())
@@ -61,7 +61,7 @@ def torch_to_tf_generator(loader):
 # ENTRAÎNEMENT AVEC TENSORFLOW #
 # ==============================
 
-def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
+def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_version:str = "mlp_v1"):
 
     # Identifiant du run d'entraînement
     run_id = str(uuid.uuid4())
@@ -102,7 +102,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
 
     # Chargement du modèle
     with tf.device('/CPU:0'):
-        model = create_mlp(models_config, dataset_config)
+        model = create_mlp(models_config, dataset_config, model_version)
         optimizer_type = training_config['optimizer']['type']
         lr = training_config['optimizer']['learning_rate']
         metric = training_config.get('metrics', 'accuracy')
@@ -151,7 +151,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
                 "run_id": str(uuid.uuid4()),
                 "library": "pytorch",
                 "dataset": dataset_config["name"],
-                "model_name": "mlp_v1",
+                "model_name": model_version,
                 "metric": selected_metric,
                 "epoch": epoch + 1,
                 "train_loss": train_loss,
@@ -181,4 +181,4 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist"):
 
 
 if __name__ == "__main__":
-    train_tensorflow_model("fashion_mnist")
+    train_tensorflow_model("fashion_mnist", "mlp_v1")
