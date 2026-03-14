@@ -19,6 +19,7 @@ from datetime import datetime
 from utils import *
 from utils import *
 from kafka_utils.producer import get_producer, send_message
+from kafka_utils.consumer import get_consumer
 
 
 # ===================
@@ -189,5 +190,26 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
         )
 
 
+# ============================
+# LANCEMENT DES ENTRAÎNEMENT #
+# ============================
+
 if __name__ == "__main__":
-    train_pytorch_model("fashion_mnist", "mlp_v1")
+
+    # Initialisation du consumer
+    consumer = get_consumer("training_orders", "pytorch_training_group")
+
+    print("En attente d'ordres d'entraînement de modèles pytorch...")
+
+    # Déroulement des messages et lancement des entraînements
+    for message in consumer:
+        order = message.value
+        dataset = order.get("dataset")
+        version = order.get("model_version")
+
+        print(f"Nouvel ordre d'entraînement reçu pour la bibliothèque pytorch: dataset={dataset}, model_version={version}")
+        try:
+            train_pytorch_model("fashion_mnist", "mlp_v1")
+            print("Entraînement terminé avec pytorch.")
+        except Exception as e:
+            print(f"Erreur lors de l'entraînement avec pytorch: {e}")
