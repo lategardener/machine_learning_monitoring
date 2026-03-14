@@ -1,10 +1,21 @@
+# ======================
+# COMMON CONFIGURATION #
+# ======================
 x-common-env: &common-env
   KEY : "totally-secret-key"
   ALGORITHM : "HS256"
   ACCESS_TOKEN_EXPIRATION_TIME : 60
 
+
+
+# ==========
+# SERVICES #
+# ==========
 services:
 
+  # =============
+  # FRONTEND UI #
+  # =============
   app:
     build: ./front
     container_name: app_frontend
@@ -15,6 +26,10 @@ services:
       - ./web:/app/web
     restart: always
 
+
+  # =============
+  # API GATEWAY #
+  # =============
   gateway:
     build: ./api-gateway
     ports:
@@ -23,6 +38,10 @@ services:
       - user_service
     restart: always
 
+
+  # ======================
+  # INFRASTRUCTURE KAFKA #
+  # ======================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:
@@ -61,6 +80,9 @@ services:
       retries: 20
 
 
+  # ============================
+  # BASE DE DONNÉES - POSTGRES #
+  # ============================
   postgres_users:
     image: postgres:15
     environment:
@@ -84,6 +106,9 @@ services:
       - pg_logs_data:/var/lib/postgresql/data
 
 
+  # =====================
+  # SERVICE UTILISATEUR #
+  # =====================
   user_service:
     build: ./user-service
     depends_on:
@@ -96,6 +121,10 @@ services:
       - ./db_user:/app/db_user
     
 
+
+  # ================
+  # CONSUMER KAFKA #
+  # ================
   log_service:
     build: ./log-service
     command: python consumer.py
@@ -109,6 +138,11 @@ services:
       - ./db_logs:/app/db_logs
     restart: always
 
+
+
+  # ================
+  # PRODUCER KAFKA #
+  # ================
   user_producer:
     build: ./user-service
     command: python producer.py
@@ -120,6 +154,43 @@ services:
     volumes:
       - ./db_user:/app/db_user
     restart: always
+
+
+  # ========================
+  # ENTRAÎNEMENT - PYTORCH #
+  # ========================
+  training_pytorch:
+    build: ./training-program
+    container_name: training_pytorch
+    command : python pytorch_training.py
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ./training-program:/app
+    restart: on-failure
+
+
+  # ===========================
+  # ENTRAÎNEMENT - TENSORFLOW #
+  # ===========================
+  training_tensorflow:
+    build: ./training-program
+    container_name: training_tensorflow
+    command: python tensorflow_training.py
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ./training-program:/app
+    restart: on-failure
+
+
+# =========
+# VOLUMES #
+# =========
 volumes:
   pg_users_data:
   pg_logs_data:
