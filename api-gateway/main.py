@@ -1,12 +1,28 @@
+# ==============================
+# CHARGEMENT DES BIBLIOTHÈQUES #
+# ==============================
+
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from routes import gateway
+from routes import model_gateway
 from config import API_KEY
 from fastapi.middleware.cors import CORSMiddleware
 from middleware.rate_limit import RateLimiter
 
+
+# =========================
+# INCLUSIONS DES ROUTEURS #
+# =========================
+
 app = FastAPI()
 app.include_router(gateway.router)
+app.include_router(model_gateway.router)
+
+
+# ====================
+# CONFIGURATION CORS #
+# ====================
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,6 +31,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ================================
+# MIDDLEWARE : SÉCURITÉ CLÉS API #
+# ================================
 
 @app.middleware("http")
 async def api_key_middleware(request: Request, call_next):
@@ -35,6 +56,11 @@ async def api_key_middleware(request: Request, call_next):
     return await call_next(request)
 
 rate_limiter = RateLimiter(interval_seconds=20)
+
+
+# =====================================
+# MIDDLEWARE : LIMITATION DE REQUÊTES #
+# =====================================
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
