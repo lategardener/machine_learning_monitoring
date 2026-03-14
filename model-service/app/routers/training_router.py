@@ -4,7 +4,7 @@
 
 from fastapi import APIRouter, HTTPException
 from models.training import TrainingRequest
-from services.kafka_service import training_order
+from services.kafka_topics_producer import training_order
 
 
 
