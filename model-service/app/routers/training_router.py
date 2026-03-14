@@ -3,8 +3,8 @@
 # ==============================
 
 from fastapi import APIRouter, HTTPException
-from models.training import TrainingRequest
-from services.kafka_topics_producer import training_order
+from app.models.training import TrainingRequest
+from app.services.kafka_topics_producer import training_order
 
 
 

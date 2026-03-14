@@ -2,8 +2,8 @@
 # CHARGEMENT DES BIBLIOTHÈQUES #
 # ==============================
 
-from kafka.utils.producer import get_producer, send_message
-from models.training import TrainingRequest
+from kafka_utils.producer import get_producer, send_message
+from app.models.training import TrainingRequest
 
 
 # Récupération du producer kafka pour l'envoi des ordres d'entraînement

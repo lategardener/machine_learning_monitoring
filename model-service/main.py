@@ -3,7 +3,7 @@
 # ==============================
 
 from fastapi import FastAPI
-from routers.training_router import router as training_router
+from app.routers.training_router import router as training_router
 import threading
 from services.kafka_metrics_consumer import listen_and_save_metrics
 from contextlib import asynccontextmanager

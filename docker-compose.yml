@@ -36,6 +36,7 @@ services:
       - "8000:8000"
     depends_on:
       - user_service
+      - model_service
     restart: always
 
 
@@ -138,7 +139,6 @@ services:
   # ================
   model_service:
     build: ./model-service
-    container_name: model_service
     depends_on:
       - kafka
       - postgres_models
@@ -146,7 +146,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
       - ./model-service:/app
-      - ./trained_program/kafka_utils:/app/kafka_utils
+      - ./training-program/kafka_utils:/app/kafka_utils
 
 
 
