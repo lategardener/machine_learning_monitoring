@@ -196,6 +196,7 @@ services:
       - kafka
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PYTHONUNBUFFERED: 1
     volumes:
       - ./training-program:/app
     restart: always
@@ -212,6 +213,7 @@ services:
       - kafka
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PYTHONUNBUFFERED: 1
     volumes:
       - ./training-program:/app
     restart: always
