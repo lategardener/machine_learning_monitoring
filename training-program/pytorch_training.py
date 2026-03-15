@@ -149,8 +149,8 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
         ram_usage = psutil.virtual_memory().percent
 
         # Score finaux
-        t_acc = (train_correct / len(train_data)) * 100
-        v_acc = (val_correct / len(validation_data)) * 100
+        train_acc = (train_correct / len(train_data)) * 100
+        val_acc = (val_correct / len(validation_data)) * 100
 
         train_loss = train_loss / len(train_loader)
         val_loss = val_loss / len(val_loader)
@@ -163,13 +163,13 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
             "model_name": model_version,
             "metric": selected_metric,
             "epoch": epoch + 1,
-            "train_loss": train_loss,
-            "train_accuracy": t_acc,
-            "val_loss": val_loss,
-            "val_accuracy": v_acc,
-            "epoch_duration": epoch_time,
-            "cpu_usage": cpu_usage,
-            "ram_usage": ram_usage,
+            "train_loss": round(float(train_loss), 2),
+            "train_accuracy": round(float(train_acc), 2),
+            "val_loss": round(float(val_loss), 2),
+            "val_accuracy": round(float(val_acc), 2),
+            "epoch_duration": round(float(epoch_time), 2),
+            "cpu_usage": round(float(cpu_usage), 2),
+            "ram_usage": round(float(ram_usage), 2),
             "timestamp": datetime.now().isoformat()
         }
 
@@ -181,8 +181,8 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
               f"Metric: {selected_metric} | "
               f"Loss: {train_loss:.4f} | "
               f"Val Loss: {val_loss:.4f} | "
-              f"Train {selected_metric[:3]}: {t_acc:.2f}% | "
-              f"Val {selected_metric[:3]}: {v_acc:.2f}% | "
+              f"Train {selected_metric[:3]}: {train_acc:.2f}% | "
+              f"Val {selected_metric[:3]}: {val_acc:.2f}% | "
               f"Time: {epoch_time:.2f}s |"
               f"CPU: {cpu_usage:.1f}% | "
               f"RAM: {ram_usage:.1f}%"

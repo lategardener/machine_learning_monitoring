@@ -150,18 +150,18 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
             # Données à transmettre à kafka pour l'envoi au service d'entraînement
             log_data = {
                 "run_id": str(uuid.uuid4()),
-                "library": "pytorch",
+                "library": "tensorflow",
                 "dataset": dataset_config["name"],
                 "model_name": model_version,
                 "metric": selected_metric,
                 "epoch": epoch + 1,
-                "train_loss": train_loss,
-                "train_accuracy": train_acc,
-                "val_loss": val_loss,
-                "val_accuracy": val_acc,
-                "epoch_duration": epoch_time,
-                "cpu_usage": cpu_usage,
-                "ram_usage": ram_usage,
+                "train_loss": round(float(train_loss),2),
+                "train_accuracy": round(float(train_acc),2),
+                "val_loss": round(float(val_loss),2),
+                "val_accuracy": round(float(val_acc),2),
+                "epoch_duration": round(float(epoch_time),2),
+                "cpu_usage": round(float(cpu_usage),2),
+                "ram_usage": round(float(ram_usage),2),
                 "timestamp": datetime.now().isoformat()
             }
 
