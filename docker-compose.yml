@@ -38,6 +38,10 @@ services:
       - user_service
       - model_service
     restart: always
+    volumes:
+      - ./model-service/app/models:/app/models
+    environment:
+      PYTHONPATH: /app
 
 
   # ======================
