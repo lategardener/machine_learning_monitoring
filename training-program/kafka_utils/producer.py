@@ -25,11 +25,11 @@ def get_producer():
         try:
 
             # Création du topic si ce n'est pas déjà fait
-            admin_client = KafkaAdminClient(boostrap_servers=['kafka:9092'])
+            admin_client = KafkaAdminClient(bootstrap_servers=['kafka:9092'])
             topic_name = "training_results"
             try:
                 topic = NewTopic(name=topic_name, num_partitions=1, replication_factor=1)
-                admin_client.create_topics(new_topics=topic)
+                admin_client.create_topics(new_topics=[topic])
                 print(f"Topic '{topic_name}' créé avec succès.")
             except TopicAlreadyExistsError:
                 print(f"Topic '{topic_name}' existe déjà.")

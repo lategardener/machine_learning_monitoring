@@ -17,6 +17,7 @@ MODEL_SERVICE_URL = "http://model_service:8000/training"
 # ========================
 # ROUTE POUR REDIRECTION #
 # ========================
+
 @router.post("/training")
 async def start_training(request_data: dict, api_key: bool = Depends(verify_api_key)):
     async with httpx.AsyncClient() as client:
@@ -26,3 +27,5 @@ async def start_training(request_data: dict, api_key: bool = Depends(verify_api_
             return response.json()
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=502, detail=f"Erreur du service : {str(e)}")
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=503, detail=f"Impossible de contacter le service modèle : {str(e)}")

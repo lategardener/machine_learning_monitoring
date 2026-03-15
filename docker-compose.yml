@@ -144,8 +144,9 @@ services:
       - postgres_models
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DATABASE_URL: postgres://user:password@postgres_models:5432/models_db
     volumes:
-      - ./model-service:/app
+      - ./db_models:/app/db_models
       - ./training-program/kafka_utils:/app/kafka_utils
 
 

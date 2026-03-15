@@ -18,7 +18,7 @@ router = APIRouter(tags=["Training"])
 @router.post("/training")
 async def training(request: TrainingRequest):
     try:
-        result = training_order(request)
+        result = await training_order(request)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
