@@ -16,8 +16,7 @@ import psutil
 import os
 import uuid
 from datetime import datetime
-from utils import *
-from utils import *
+from src.utils import *
 from kafka_utils.producer import get_producer, send_message
 from kafka_utils.consumer import get_consumer
 
