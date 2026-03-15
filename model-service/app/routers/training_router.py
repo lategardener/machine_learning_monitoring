@@ -2,10 +2,11 @@
 # CHARGEMENT DES BIBLIOTHÈQUES #
 # ==============================
 
-from fastapi import APIRouter, HTTPException
-from app.models.training import TrainingRequest
+from fastapi import APIRouter, HTTPException, Query
+from app.models.training import TrainingRequest, TrainingResult
 from app.services.kafka_topics_producer import training_order
-
+from app.services.training_results import get_training_results
+from typing import List
 
 
 # Initialisation du routeur
@@ -23,3 +24,18 @@ async def training(request: TrainingRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+# ==========================================
+# ROUTE POUR LA RÉCUPÉRATION DES RÉSULTATS #
+# ==========================================
+
+@router.get("/results", response_model=List[TrainingResult])
+async def get_results(library: str = Query(..., description="Pytorch ou tensorflow")):
+    try:
+        results = get_training_results(library)
+        if results is None:
+            raise HTTPException(status_code=404, detail=f"Aucun résultat trouvé pour la librairie : {library}")
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
