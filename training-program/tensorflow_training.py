@@ -149,7 +149,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
 
             # Données à transmettre à kafka pour l'envoi au service d'entraînement
             log_data = {
-                "run_id": str(uuid.uuid4()),
+                "run_id": run_id,
                 "library": "tensorflow",
                 "dataset": dataset_config["name"],
                 "model_name": model_version,
