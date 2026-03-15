@@ -5,6 +5,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from dependencies import verify_api_key
 import httpx
+from models.training import TrainingRequest
 
 
 # Initialisation du routeur
@@ -19,10 +20,10 @@ MODEL_SERVICE_URL = "http://model_service:8000/training"
 # ========================
 
 @router.post("/training")
-async def start_training(request_data: dict, api_key: bool = Depends(verify_api_key)):
+async def start_training(request_data: TrainingRequest, api_key: bool = Depends(verify_api_key)):
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(MODEL_SERVICE_URL, json=request_data)
+            response = await client.post(MODEL_SERVICE_URL, json=request_data.model_dump())
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
