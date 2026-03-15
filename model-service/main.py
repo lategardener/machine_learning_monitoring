@@ -8,8 +8,6 @@ import threading
 from app.services.kafka_metrics_consumer import listen_and_save_metrics
 from contextlib import asynccontextmanager
 from db_models.database import engine, Base
-from db_models import models
-
 
 # =================================
 # DÉMARRAGE DES PROCESSUS DE FOND #
