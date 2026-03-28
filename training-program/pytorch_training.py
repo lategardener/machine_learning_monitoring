@@ -108,7 +108,8 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
     criterion = nn.CrossEntropyLoss()
 
     # Entraînement du modèle
-    for epoch in range(training_config['epochs']):
+    number_epochs = training_config['epochs']
+    for epoch in range(number_epochs):
         start_time = time.time()
         model.train()
         train_loss = 0
@@ -156,6 +157,7 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
         val_loss = val_loss / len(val_loader)
 
         # Données à transmettre à kafka pour l'envoi au service d'entraînement
+        status = "ongoing" if epoch < number_epochs - 1 else "completed"
         log_data = {
             "run_id": run_id,
             "library": "pytorch",
@@ -170,7 +172,8 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
             "epoch_duration": round(float(epoch_time), 2),
             "cpu_usage": round(float(cpu_usage), 2),
             "ram_usage": round(float(ram_usage), 2),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "status" : status
         }
 
         # Envoi des métriques au service kafka
@@ -208,7 +211,7 @@ if __name__ == "__main__":
 
         print(f"Nouvel ordre d'entraînement reçu pour la bibliothèque pytorch: dataset={dataset}, model_version={version}")
         try:
-            train_pytorch_model("fashion_mnist", "mlp_v1")
+            train_pytorch_model(dataset, version)
             print("Entraînement terminé avec pytorch.")
         except Exception as e:
             print(f"Erreur lors de l'entraînement avec pytorch: {e}")
