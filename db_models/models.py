@@ -36,6 +36,11 @@ class TrainingLog(Base):
     cpu_usage = Column(Float, nullable=True)
     ram_usage = Column(Float, nullable=True)
 
+
+    # État de l'entraînement
+    status = Column(String, nullable=False)
+
+
 class TokenBlacklist(Base):
     __tablename__ = "token_blacklist"
     id = Column(Integer, primary_key=True, index=True)
