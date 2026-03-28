@@ -35,3 +35,9 @@ class TrainingLog(Base):
     # Ressources utilisées
     cpu_usage = Column(Float, nullable=True)
     ram_usage = Column(Float, nullable=True)
+
+class TokenBlacklist(Base):
+    __tablename__ = "token_blacklist"
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String, unique=True, index=True)
+    expires_at = Column(String)
