@@ -124,7 +124,8 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
     # Entraînement du modèle
     with tf.device('/CPU:0'):
         # Entraînement du modèle une seule epoch à la fois pour capturer les métriques
-        for epoch in range(training_config['epochs']):
+        number_epochs = training_config['epochs']
+        for epoch in range(number_epochs):
 
             start_time = time.time()
             history = model.fit(
@@ -148,6 +149,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
             val_acc = history.history[f'val_{selected_metric}'][-1]
 
             # Données à transmettre à kafka pour l'envoi au service d'entraînement
+            status = "ongoing" if epoch < number_epochs - 1 else "completed"
             log_data = {
                 "run_id": run_id,
                 "library": "tensorflow",
@@ -162,7 +164,8 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
                 "epoch_duration": round(float(epoch_time),2),
                 "cpu_usage": round(float(cpu_usage),2),
                 "ram_usage": round(float(ram_usage),2),
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "status" : status
             }
 
             # Envoi des métriques au service kafka
@@ -201,7 +204,7 @@ if __name__ == "__main__":
 
         print(f"Nouvel ordre d'entraînement reçu pour la bibliothèque tensorflow: dataset={dataset}, model_version={version}")
         try:
-            train_tensorflow_model("fashion_mnist", "mlp_v1")
+            train_tensorflow_model(dataset, version)
             print("Entraînement terminé avec tensorflow.")
         except Exception as e:
             print(f"Erreur lors de l'entraînement avec tensorflow: {e}")
