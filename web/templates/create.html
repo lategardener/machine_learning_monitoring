@@ -1,24 +1,57 @@
-<div id="error" style="color: red"></div>
-<div>
-    <label>Nom d'utilisateur</label>
-    <input label="username" name="username" id="username">
-    <label>Mot de passe</label>
-    <input type="password" label="password" name="password" id="password"><br>
-    <label>Vérification du mot de passe</label>
-    <input type="password" label="Vpassword" name="Vpassword" id="Vpassword"><br>
-    <button onclick="Create(event)">Créer</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine learning monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/create.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Bloc gauche pour inscription -->
+    <div class="left">
+        <div class="form-area">
+            <div id="error"></div>
+
+            <p class="subtitle">Rejoignez-nous</p>
+            <h1>Créer un compte</h1>
+            <p class="description">Créez votre compte pour accéder au tableau de bord.</p>
+
+            <div class="field">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" placeholder="votre identifiant">
+            </div>
+
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" placeholder="••••••••">
+            </div>
+
+            <div class="field">
+                <label for="Vpassword">Vérification du mot de passe</label>
+                <input type="password" id="Vpassword" name="Vpassword" placeholder="••••••••">
+            </div>
+
+            <button class="btn-primary" onclick="Create(event)">Créer un compte</button>
+
+            <div class="login-link">
+                Déjà un compte ? <a href="/">Se connecter</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bloc droit -->
+    <div class="right">
+    </div>
+
 </div>
-<a href="/login">Se connecter</a>
 
+<script src="/static/js/create.js"></script>
 
-
-
-<script>
-const parameter = new URLSearchParams(window.location.search);
-const error = parameter.get('error');
-if (error) {
-    document.getElementById('error').innerText = error;
-}
-</script>
-
-<script src="./static/js/create.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+/*****************************/
+/* Configurations générales */
+/***************************/
+
+html, body {
+    height: 100%;
+    font-family: 'Sora', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+}
+
+
+/**********************/
+/* Configurations nav */
+/**********************/
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px;
+    background: #16161d;
+    border-bottom: 1px solid #2a2a38;
+}
+
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#nav-username {
+    font-size: 13px;
+    color: #7a7a95;
+}
+
+#btn-logout {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1.5px solid #2a2a38;
+    border-radius: 8px;
+    color: #e8e8f0;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+#btn-logout:hover {
+    border-color: #7c6af7;
+    background: rgba(124, 106, 247, 0.1);
+}
+
+
+/****************************/
+/* Configurations du contenu */
+/****************************/
+
+.main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 32px 40px;
+}
+
+
+/*****************************/
+/* Configurations des graphes */
+/*****************************/
+
+.graph-card {
+    background: #16161d;
+    border: 1px solid #2a2a38;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.graph-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #e8e8f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Badge réservé aux admins */
+.admin-badge {
+    font-size: 10px;
+    font-weight: 500;
+    background: rgba(124, 106, 247, 0.2);
+    color: #a99ef8;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(124, 106, 247, 0.3);
+}
