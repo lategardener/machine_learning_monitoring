@@ -205,3 +205,46 @@ html, body {
     border-radius: 20px;
     border: 1px solid rgba(124, 106, 247, 0.3);
 }
+
+
+/*********************/
+/* Footer dashboard  */
+/*********************/
+
+.dashboard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
+    background: #16161d;
+    border-top: 1px solid #2a2a38;
+    font-size: 12px;
+    color: #7a7a95;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-links a {
+    color: #a99ef8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #e8e8f0;
+}
+
+.separator {
+    width: 1px;
+    height: 12px;
+    background: #2a2a38;
+}
+
+.footer-copy {
+    font-size: 11px;
+    color: #45455a;
+}
