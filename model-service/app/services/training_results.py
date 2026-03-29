@@ -23,7 +23,7 @@ def get_training_results(library: str) -> List[TrainingResult] | None:
         last = db.query(TrainingLog).filter(TrainingLog.library == library).order_by(desc(TrainingLog.id)).first()
 
         if not last:
-            return None
+            return []
 
         # Tri des résultats par epoch
         epoch = db.query(TrainingLog).filter(TrainingLog.run_id == last.run_id).order_by(desc(TrainingLog.epoch)).all()
