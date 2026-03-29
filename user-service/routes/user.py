@@ -52,7 +52,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Incorrect credentials")
-    access_token = create_access_token(data={"username": form_data.username})
+    access_token = create_access_token(data={"username": form_data.username, "role": user.role})
 
     outbox_entry = Outbox(
         event_type="user.login",
