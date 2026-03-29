@@ -150,9 +150,8 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
         ram_usage = psutil.virtual_memory().percent
 
         # Score finaux
-        train_acc = (train_correct / len(train_data)) * 100
-        val_acc = (val_correct / len(validation_data)) * 100
-
+        train_acc = (train_correct / len(train_data))
+        val_acc = (val_correct / len(validation_data))
         train_loss = train_loss / len(train_loader)
         val_loss = val_loss / len(val_loader)
 
