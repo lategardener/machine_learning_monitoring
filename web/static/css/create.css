@@ -1,0 +1,152 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+/*****************************/
+/* Configurations générales */
+/***************************/
+
+html, body {
+    height: 100%;
+    font-family: 'Sora', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+}
+
+/* On divise l'écran en deux */
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+
+/*************************************************/
+/* Configurations bloc de connexion/inscription */
+/***********************************************/
+
+/* Formulaire d'inscription à gauche */
+.left {
+    flex: 0 0 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 56px;
+    background: #16161d;
+}
+
+/* Paramétrage de la zone dédiée à l'inscription */
+.form-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 340px;
+}
+
+.subtitle {
+    color: #7a7a95;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.description {
+    color: #7a7a95;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 36px;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #7a7a95;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+input {
+    width: 100%;
+    padding: 13px 16px;
+    background: #1e1e28;
+    border: 1.5px solid #2a2a38;
+    border-radius: 10px;
+    color: #e8e8f0;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: #7c6af7;
+    box-shadow: 0 0 0 3px rgba(124, 106, 247, 0.2);
+}
+
+input::placeholder {
+    color: #45455a;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #7c6af7;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    background: #6a58e8;
+    box-shadow: 0 4px 12px rgba(124, 106, 247, 0.3);
+}
+
+.login-link {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: #7a7a95;
+}
+
+.login-link a {
+    color: #a99ef8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Pour afficher les erreurs */
+#error {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    min-height: 20px;
+    color: #f16b6b;
+    background: rgba(241, 107, 107, 0.1);
+    border: 1px solid rgba(241, 107, 107, 0.25);
+    display: none;
+}
+
+#error:not(:empty) { display: block; }
+
