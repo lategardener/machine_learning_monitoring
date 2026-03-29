@@ -26,6 +26,18 @@ html, body {
     border-bottom: 1px solid #2a2a38;
 }
 
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.nav-logo img {
+    width: 36px;
+    height: auto;
+}
 
 .nav-links {
     display: flex;
@@ -53,6 +65,73 @@ html, body {
 #btn-logout:hover {
     border-color: #7c6af7;
     background: rgba(124, 106, 247, 0.1);
+}
+
+
+/****************************/
+/* Barre d'onglets datasets */
+/****************************/
+
+.tabs-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    background: #16161d;
+    border-bottom: 1px solid #2a2a38;
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.tab {
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #7a7a95;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.tab:hover {
+    color: #e8e8f0;
+}
+
+/* Onglet actif */
+.tab.active {
+    color: #e8e8f0;
+    border-bottom: 2px solid #7c6af7;
+    font-weight: 600;
+}
+
+/* Bouton lancer entraînement (admin) */
+.btn-train {
+    padding: 8px 20px;
+    background: #7c6af7;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-train:hover {
+    background: #6a58e8;
+}
+
+/* Bouton désactivé pendant l'entraînement */
+.btn-train:disabled {
+    background: #2a2a38;
+    color: #7a7a95;
+    cursor: not-allowed;
 }
 
 

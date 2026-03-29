@@ -34,8 +34,6 @@ async def training(request: TrainingRequest, current_user: TokenData = Depends(g
 async def get_results(library: str = Query(..., description="Pytorch ou tensorflow"), current_user: TokenData = Depends(get_current_user)):
     try:
         results = get_training_results(library)
-        if results is None:
-            raise HTTPException(status_code=404, detail=f"Aucun résultat trouvé pour la librairie : {library}")
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

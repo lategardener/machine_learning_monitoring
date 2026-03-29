@@ -13,15 +13,30 @@
 
 <!-- NAVBAR -->
 <nav class="navbar">
-
-    <span>ML Monitor</span>
+    <div class="nav-logo">
+        <img src="/static/images/logo.png" alt="logo">
+        <span>ML Monitor</span>
+    </div>
     <div class="nav-links">
         <span id="nav-username"></span>
         <button id="btn-logout">Déconnexion</button>
     </div>
 </nav>
 
-<!-- contenu principal -->
+<!-- BARRE D'ONGLETS DATASETS -->
+<div class="tabs-bar">
+    <div class="tabs">
+        <button class="tab active" data-dataset="fashion_mnist">Fashion MNIST</button>
+        <button class="tab" data-dataset="cifar100">CIFAR-100</button>
+    </div>
+
+    <!-- Bouton lancer entraînement (admin uniquement) -->
+    <button class="btn-train" id="btn-train" style="display:none;">
+        Lancer l'entraînement
+    </button>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
 <main class="main">
 
     <!-- Graphe : Précision du modèle -->
@@ -37,12 +52,12 @@
     </section>
 
     <!-- Graphes admin uniquement : CPU et RAM -->
-    <section class="graph-card admin-only" id="cpu-section" style="display:none;">
+    <section class="graph-card" id="cpu-section" style="display:none;">
         <h2>Utilisation CPU <span class="admin-badge">Admin</span></h2>
         <div id="chart-cpu"></div>
     </section>
 
-    <section class="graph-card admin-only" id="ram-section" style="display:none;">
+    <section class="graph-card" id="ram-section" style="display:none;">
         <h2>Utilisation RAM <span class="admin-badge">Admin</span></h2>
         <div id="chart-ram"></div>
     </section>

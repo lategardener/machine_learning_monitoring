@@ -55,7 +55,7 @@ async def api_key_middleware(request: Request, call_next):
 
     return await call_next(request)
 
-rate_limiter = RateLimiter(interval_seconds=3)
+rate_limiter = RateLimiter(max_requests=10, window_seconds=2)
 
 
 # =====================================
