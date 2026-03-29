@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 import time
-from torchvision.datasets import MNIST
+from torchvision.datasets import FashionMNIST, CIFAR100
 import psutil
 import os
 import uuid
@@ -86,10 +86,13 @@ def train_pytorch_model(model_architecture: str = "fashion_mnist", model_version
 
     # Chargement des données
     if model_architecture == "fashion_mnist":
-        data = MNIST(root='data/', train=True, download=True, transform=transforms.ToTensor())
+        data = FashionMNIST(root='data/', train=True, download=True, transform=transforms.ToTensor())
         train_data, validation_data = random_split(data, [50000, 10000])
+    elif model_architecture == "cifar100":
+        data = CIFAR100(root='data/', train=True, download=True, transform=transforms.ToTensor())
+        train_data, validation_data = random_split(data, [40000, 10000])
     else:
-        pass
+        raise ValueError(f"Dataset non reconnu : {model_architecture}")
 
     train_loader = DataLoader(train_data, batch_size=training_config["batch_size"], shuffle=training_config["shuffle"])
     val_loader = DataLoader(validation_data, batch_size=training_config["batch_size"], shuffle=False)

@@ -10,7 +10,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
-from torchvision.datasets import MNIST
+from torchvision.datasets import FashionMNIST, CIFAR100
 import torchvision.transforms as transforms
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -75,17 +75,22 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
 
     # Chargement des données
     if model_architecture == "fashion_mnist":
-        data = MNIST(root='data/', train=True, transform=transforms.ToTensor())
+        data = FashionMNIST(root='data/', train=True, download=True, transform=transforms.ToTensor())
         train_data, validation_data = random_split(data, [50000, 10000])
+    elif model_architecture == "cifar100":
+        data = CIFAR100(root='data/', train=True, download=True, transform=transforms.ToTensor())
+        train_data, validation_data = random_split(data, [40000, 10000])
     else:
         pass
+
+    input_shape_tuple = tuple([None] + dataset_config['input_shape'])
 
     # Mise au format tensorflow des données d'entraînement
     train_loader = DataLoader(train_data, training_config["batch_size"], training_config["shuffle"])
     train_dataset = tf.data.Dataset.from_generator(
         lambda: torch_to_tf_generator(train_loader),
         output_signature=(
-            tf.TensorSpec(shape=(None, 1, 28, 28), dtype=tf.float32),
+            tf.TensorSpec(shape=input_shape_tuple, dtype=tf.float32),
             tf.TensorSpec(shape=(None,), dtype=tf.int64)
         )
     ).repeat()
@@ -95,7 +100,7 @@ def train_tensorflow_model(model_architecture:str = "fashion_mnist", model_versi
     val_dataset = tf.data.Dataset.from_generator(
         lambda: torch_to_tf_generator(val_loader),
         output_signature=(
-            tf.TensorSpec(shape=(None, 1, 28, 28), dtype=tf.float32),
+            tf.TensorSpec(shape=input_shape_tuple, dtype=tf.float32),
             tf.TensorSpec(shape=(None,), dtype=tf.int64)
         )
     ).repeat()
@@ -208,4 +213,3 @@ if __name__ == "__main__":
             print("Entraînement terminé avec tensorflow.")
         except Exception as e:
             print(f"Erreur lors de l'entraînement avec tensorflow: {e}")
-

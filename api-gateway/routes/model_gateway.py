@@ -43,15 +43,21 @@ async def start_training(request: Request, request_data: TrainingRequest, api_ke
 # ==========================================
 
 @router.get("/results")
-async def get_results(request: Request, library: str = Query(..., description="Pytorch ou tensorflow"), api_key: bool = Depends(verify_api_key)):
+async def get_results(request: Request, library: str = Query(..., description="Pytorch ou tensorflow"),
+                      dataset: str = Query(..., description="Nom du dataset"),
+                      api_key: bool = Depends(verify_api_key)
+                      ):
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="NON Autoriser")
     
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(MODEL_RESULTS_URL, params={"library": library},
-                headers={"Authorization": auth_header})
+            response = await client.get(
+                MODEL_RESULTS_URL,
+                params={"library": library, "dataset": dataset},
+                headers={"Authorization": auth_header}
+            )
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:

@@ -30,10 +30,8 @@ if (isAdmin) {
 // GESTION DES ONGLETS
 // ========================
 
-// Dataset actif par défaut
 let currentDataset = 'fashion_mnist';
 
-// Variables pour cacher les anciens graphiques lors d'un nouvel entraînement
 let ptStaleRunId = null;
 let tfStaleRunId = null;
 let currentPTData = [];
@@ -48,8 +46,14 @@ document.querySelectorAll('.tab').forEach(tab => {
         // Changement du dataset courant
         currentDataset = tab.dataset.dataset;
 
-        // Réinitialisation des graphes pour le nouveau dataset
+        // CORRECTION : On annule le blocage des anciens graphiques
+        // pour que la nouvelle page affiche immédiatement ses données
+        ptStaleRunId = null;
+        tfStaleRunId = null;
+
+        // CORRECTION : On vide visuellement et on force le rechargement immédiat
         resetCharts();
+        fetchMetrics();
     });
 });
 
@@ -87,8 +91,8 @@ const layout = (yLabel, yRange = null) => ({
         gridcolor: '#2a2a38',
         color: '#7a7a95',
         title: yLabel,
-        autorange: yRange ? false : true, // Désactive l'autorange si on force une échelle
-        range: yRange // Applique l'échelle dynamique serrée
+        autorange: yRange ? false : true,
+        range: yRange
     },
     showlegend: false
 });
@@ -143,10 +147,10 @@ async function fetchMetrics() {
     try {
         // Récupération des résultats pour chaque librairie
         const [resPT, resTF] = await Promise.all([
-            fetch('http://localhost:8000/models/results?library=pytorch', {
+            fetch(`http://localhost:8000/models/results?library=pytorch&dataset=${currentDataset}`, {
                 headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' }
             }),
-            fetch('http://localhost:8000/models/results?library=tensorflow', {
+            fetch(`http://localhost:8000/models/results?library=tensorflow&dataset=${currentDataset}`, {
                 headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' }
             })
         ]);

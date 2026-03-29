@@ -33,3 +33,7 @@ async def read_dashboard():
 @app.get("/")
 async def read_index():
     return FileResponse("web/templates/home.html")
+
+@app.get("/cgu")
+async def read_cgu():
+    return FileResponse("web/templates/cgu.html")
