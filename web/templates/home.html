@@ -1,14 +1,59 @@
-<h1>Bienvenue sur le site</h1>
-<button id="btn-logout">Déconnexion</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine learning monitoring</title>
+    <link rel="stylesheet" href="./static/css/home.css">
+</head>
+<body>
 
+<div class="layout">
 
-<script>
-    (function() {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = "/login?error=" + encodeURIComponent("Veuillez vous connecter");
-        }
-    })();
-</script>
+    <!-- Bloc gauche pour inscription et connexion-->
+    <div class="left">
+
+        <div class="logo-area">
+            <img src="./static/images/logo.png">
+        </div>
+
+        <div class="form-area">
+            <div id="error"></div>
+            <div id="success"></div>
+
+            <p class="subtitle">Bienvenue</p>
+            <h1>Se connecter</h1>
+            <p class="subtitle">Accédez à votre tableau de bord de monitoring.</p>
+
+            <div class="field">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" placeholder="votre identifiant">
+            </div>
+
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" placeholder="••••••••">
+            </div>
+
+            <button class="btn-primary" onclick="Login(event)">Se connecter</button>
+
+            <div class="create-link">
+                Pas encore de compte ? <a href="/create">Créer un compte</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- bloc image-->
+    <div class="right">
+        <div class="right-image">
+            <img src="./static/images/illustration.png">
+        </div>
+    </div>
+
+</div>
 
 <script src="./static/js/home.js"></script>
+
+</body>
+</html>

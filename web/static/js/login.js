@@ -1,3 +1,11 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const errorMsg = params.get('error');
+    const successMsg = params.get('success');
+    if (errorMsg)   document.getElementById('error').innerText = errorMsg;
+    if (successMsg) document.getElementById('success').innerText = successMsg;
+});
+
 
 async function Login(e) {
     if (e) e.preventDefault();
