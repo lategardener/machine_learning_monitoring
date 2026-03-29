@@ -10,6 +10,7 @@ html, body {
     font-family: 'Sora', sans-serif;
     background: #0f0f13;
     color: #e8e8f0;
+    overflow-x: hidden;
 }
 
 
@@ -135,15 +136,45 @@ html, body {
 }
 
 
-/****************************/
-/* Configurations du contenu */
-/****************************/
+/************************************/
+/* Colonnes PyTorch / TensorFlow    */
+/************************************/
 
-.main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    padding: 32px 40px;
+.columns {
+    display: flex;
+    gap: 16px;
+    padding: 16px 24px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+/* En-tête de colonne avec statut */
+.col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: #a99ef8;
+    padding: 6px 12px;
+    background: rgba(124, 106, 247, 0.1);
+    border: 1px solid rgba(124, 106, 247, 0.2);
+    border-radius: 8px;
+}
+
+/* Info statut et époques */
+.col-info {
+    font-size: 11px;
+    font-weight: 400;
+    color: #7a7a95;
 }
 
 
@@ -155,17 +186,13 @@ html, body {
     background: #16161d;
     border: 1px solid #2a2a38;
     border-radius: 12px;
-    padding: 24px;
+    padding: 12px;
+    flex: 1;
 }
 
-.graph-card h2 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #e8e8f0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.graph-card div {
+    width: 100%;
+    height: 170px;
 }
 
 /* Badge réservé aux admins */

@@ -8,40 +8,38 @@ if (!token) {
     window.location.href = "/?error=" + encodeURIComponent("Veuillez vous connecter");
 }
 
-// Décodage du payload JWT
 const payload = JSON.parse(atob(token.split('.')[1]));
 const isAdmin = payload.role === 'admin';
 const username = payload.username;
 
-// Affichage du nom d'utilisateur dans la navbar
 document.getElementById('nav-username').innerText = username;
 
-// Affichage des sections admin
 if (isAdmin) {
-    document.getElementById('cpu-section').style.display = 'block';
-    document.getElementById('ram-section').style.display = 'block';
+    document.getElementById('pt-cpu-card').style.display = 'block';
+    document.getElementById('pt-ram-card').style.display = 'block';
+    document.getElementById('tf-cpu-card').style.display = 'block';
+    document.getElementById('tf-ram-card').style.display = 'block';
     document.getElementById('btn-train').style.display = 'block';
 }
 
 
 // ========================
-// GESTION DES ONGLETS
+// GESTION DES ONGLETS ET ÉTATS
 // ========================
 
-// Dataset actif par défaut
 let currentDataset = 'fashion_mnist';
-let trainingInProgress = false;
+
+// Variables pour cacher les anciens graphiques lors d'un nouvel entraînement
+let ptStaleRunId = null;
+let tfStaleRunId = null;
+let currentPTData = [];
+let currentTFData = [];
 
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-        // Mise à jour de l'onglet actif
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-
-        // Changement du dataset courant
         currentDataset = tab.dataset.dataset;
-
-        // Réinitialisation des graphes pour le nouveau dataset
         resetCharts();
     });
 });
@@ -54,89 +52,57 @@ document.querySelectorAll('.tab').forEach(tab => {
 const layout = (yLabel) => ({
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
-    font: { color: '#e8e8f0', family: 'Sora, sans-serif', size: 12 },
-    margin: { t: 10, r: 20, b: 40, l: 50 },
+    font: { color: '#e8e8f0', family: 'Sora, sans-serif', size: 11 },
+    margin: { t: 10, r: 10, b: 45, l: 45 }, // Marge du bas (b) augmentée pour faire respirer E1, E2
     xaxis: {
         gridcolor: '#2a2a38',
         color: '#7a7a95',
+        tickpad: 10 // Pousse les labels E1, E2, E3 plus bas, loin de l'axe
     },
     yaxis: {
         gridcolor: '#2a2a38',
         color: '#7a7a95',
-        title: yLabel
+        title: yLabel,
+        autorange: true // Échelle dynamique serrée sur les min/max connus
     },
-    showlegend: true,
-    legend: { font: { color: '#e8e8f0' } }
+    showlegend: false
 });
 
 const config = { responsive: true, displayModeBar: false };
 
-const emptyTrace = (name, color) => ({
-    x: [],
-    y: [],
-    type: 'scatter',
-    mode: 'lines+markers',
-    name: name,
+const emptyTrace = (color) => ({
+    x: [], y: [], type: 'scatter', mode: 'lines+markers',
     line: { color: color, width: 2 },
-    marker: { color: color, size: 5 },
+    marker: { color: color, size: 4 },
     fill: 'tozeroy',
     fillcolor: color.replace('1)', '0.08)')
 });
 
-// Initialisation des graphes
 function initCharts() {
-    Plotly.newPlot('chart-accuracy', [
-        emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'),
-        emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)')
-    ], layout('Précision (%)'), config);
+    Plotly.newPlot('pt-accuracy', [emptyTrace('rgba(93, 217, 138, 1)')],  layout('Précision (%)'), config);
+    Plotly.newPlot('pt-speed',    [emptyTrace('rgba(93, 217, 138, 1)')],  layout('Durée / epoch (s)'), config);
+    Plotly.newPlot('pt-cpu',      [emptyTrace('rgba(241, 107, 107, 1)')], layout('CPU (%)'), config);
+    Plotly.newPlot('pt-ram',      [emptyTrace('rgba(255, 180, 50, 1)')],  layout('RAM (%)'), config);
 
-    Plotly.newPlot('chart-speed', [
-        emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'),
-        emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)')
-    ], layout('Durée par epoch (s)'), config);
-
-    Plotly.newPlot('chart-cpu', [
-        emptyTrace('CPU %', 'rgba(241, 107, 107, 1)')
-    ], layout('CPU (%)'), config);
-
-    Plotly.newPlot('chart-ram', [
-        emptyTrace('RAM %', 'rgba(255, 180, 50, 1)')
-    ], layout('RAM (%)'), config);
+    Plotly.newPlot('tf-accuracy', [emptyTrace('rgba(124, 106, 247, 1)')], layout('Précision (%)'), config);
+    Plotly.newPlot('tf-speed',    [emptyTrace('rgba(124, 106, 247, 1)')], layout('Durée / epoch (s)'), config);
+    Plotly.newPlot('tf-cpu',      [emptyTrace('rgba(241, 107, 107, 1)')], layout('CPU (%)'), config);
+    Plotly.newPlot('tf-ram',      [emptyTrace('rgba(255, 180, 50, 1)')],  layout('RAM (%)'), config);
 }
 
-// Réinitialisation des graphes lors du changement d'onglet
 function resetCharts() {
-    Plotly.react('chart-accuracy', [
-        emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'),
-        emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)')
-    ], layout('Précision (%)'));
+    Plotly.react('pt-accuracy', [emptyTrace('rgba(93, 217, 138, 1)')],  layout('Précision (%)'));
+    Plotly.react('pt-speed',    [emptyTrace('rgba(93, 217, 138, 1)')],  layout('Durée / epoch (s)'));
+    Plotly.react('pt-cpu',      [emptyTrace('rgba(241, 107, 107, 1)')], layout('CPU (%)'));
+    Plotly.react('pt-ram',      [emptyTrace('rgba(255, 180, 50, 1)')],  layout('RAM (%)'));
 
-    Plotly.react('chart-speed', [
-        emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'),
-        emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)')
-    ], layout('Durée par epoch (s)'));
-
-    Plotly.react('chart-cpu', [
-        emptyTrace('CPU %', 'rgba(241, 107, 107, 1)')
-    ], layout('CPU (%)'));
-
-    Plotly.react('chart-ram', [
-        emptyTrace('RAM %', 'rgba(255, 180, 50, 1)')
-    ], layout('RAM (%)'));
+    Plotly.react('tf-accuracy', [emptyTrace('rgba(124, 106, 247, 1)')], layout('Précision (%)'));
+    Plotly.react('tf-speed',    [emptyTrace('rgba(124, 106, 247, 1)')], layout('Durée / epoch (s)'));
+    Plotly.react('tf-cpu',      [emptyTrace('rgba(241, 107, 107, 1)')], layout('CPU (%)'));
+    Plotly.react('tf-ram',      [emptyTrace('rgba(255, 180, 50, 1)')],  layout('RAM (%)'));
 }
 
 initCharts();
-
-
-// ========================
-// STOCKAGE DES DONNÉES
-// ========================
-
-const chartData = {
-    tensorflow: { epochs: [], accuracy: [], speed: [] },
-    pytorch:    { epochs: [], accuracy: [], speed: [] },
-    system:     { timestamps: [], cpu: [], ram: [] }
-};
 
 
 // ========================
@@ -145,83 +111,82 @@ const chartData = {
 
 async function fetchMetrics() {
     try {
-        // Récupération des résultats pour chaque librairie
-        const [resTF, resPT] = await Promise.all([
-            fetch('http://localhost:8000/models/results?library=tensorflow', {
-                headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' }
-            }),
-            fetch('http://localhost:8000/models/results?library=pytorch', {
-                headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' }
-            })
+        const [resPT, resTF] = await Promise.all([
+            fetch('http://localhost:8000/models/results?library=pytorch', { headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' } }),
+            fetch('http://localhost:8000/models/results?library=tensorflow', { headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' } })
         ]);
 
-        if (resTF.status === 401 || resPT.status === 401) {
+        if (resPT.status === 401 || resTF.status === 401) {
             window.location.href = "/?error=" + encodeURIComponent("Session expirée");
             return;
         }
 
-        if (!resTF.ok || !resPT.ok) {
-            console.warn("Les services de modèle ne sont pas joignables.");
-            return;
-        }
+        if (!resPT.ok || !resTF.ok) return;
 
-        const dataTF = await resTF.json();
         const dataPT = await resPT.json();
+        const dataTF = await resTF.json();
 
-        // Réinitialisation des données
-        chartData.tensorflow = { epochs: [], accuracy: [], speed: [] };
-        chartData.pytorch    = { epochs: [], accuracy: [], speed: [] };
-        chartData.system     = { timestamps: [], cpu: [], ram: [] };
+        let pt = dataPT.filter(m => m.dataset === currentDataset);
+        let tf = dataTF.filter(m => m.dataset === currentDataset);
 
-        // Filtrage par dataset sélectionné et alimentation des graphes
-        dataTF
-            .filter(m => m.dataset === currentDataset)
-            .forEach(m => {
-                chartData.tensorflow.epochs.push(`E${m.epoch}`);
-                chartData.tensorflow.accuracy.push(m.val_accuracy);
-                chartData.tensorflow.speed.push(m.epoch_duration);
-                chartData.system.timestamps.push(new Date(m.timestamp).toLocaleTimeString());
-                chartData.system.cpu.push(m.cpu_usage);
-                chartData.system.ram.push(m.ram_usage);
-                if (isAdmin) updateTrainButton(m.status === 'ongoing');
-            });
+        // Tri croissant pour garantir l'ordre E1, E2, E3 de gauche à droite
+        pt.sort((a, b) => a.epoch - b.epoch);
+        tf.sort((a, b) => a.epoch - b.epoch);
 
-        dataPT
-            .filter(m => m.dataset === currentDataset)
-            .forEach(m => {
-                chartData.pytorch.epochs.push(`E${m.epoch}`);
-                chartData.pytorch.accuracy.push(m.val_accuracy);
-                chartData.pytorch.speed.push(m.epoch_duration);
-                if (isAdmin) updateTrainButton(m.status === 'ongoing');
-            });
+        // Si le run_id reçu est le vieux run_id (banni), on force le tableau à vide pour cacher l'affichage
+        if (pt.length > 0 && pt[pt.length - 1].run_id === ptStaleRunId) pt = [];
+        if (tf.length > 0 && tf[tf.length - 1].run_id === tfStaleRunId) tf = [];
 
-        // Mise à jour des graphes
-        Plotly.react('chart-accuracy', [
-            { ...emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'), x: chartData.tensorflow.epochs, y: chartData.tensorflow.accuracy },
-            { ...emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)'),  x: chartData.pytorch.epochs,    y: chartData.pytorch.accuracy }
-        ], layout('Précision (%)'));
+        // Mise à jour de la sauvegarde locale
+        currentPTData = pt;
+        currentTFData = tf;
 
-        Plotly.react('chart-speed', [
-            { ...emptyTrace('TensorFlow', 'rgba(124, 106, 247, 1)'), x: chartData.tensorflow.epochs, y: chartData.tensorflow.speed },
-            { ...emptyTrace('PyTorch',    'rgba(93, 217, 138, 1)'),  x: chartData.pytorch.epochs,    y: chartData.pytorch.speed }
-        ], layout('Durée par epoch (s)'));
+        // --- AFFICHAGE DES STATUTS ---
+        const updateStatus = (elementId, data) => {
+            const el = document.getElementById(elementId);
+            if (data.length === 0) {
+                el.innerText = ptStaleRunId || tfStaleRunId ? "En attente du démarrage..." : "Aucun entraînement";
+                el.style.color = "#7a7a95";
+            } else {
+                const latest = data[data.length - 1];
+                const statusStr = latest.status === 'completed' ? 'Terminé' : 'En cours';
+                el.innerText = `Époque ${latest.epoch} — ${statusStr}`;
+                el.style.color = latest.status === 'completed' ? "#5dd98a" : "#ffb432";
+            }
+        };
+        updateStatus('pt-status', pt);
+        updateStatus('tf-status', tf);
+
+        // --- MISE À JOUR PLOTLY ---
+        Plotly.react('pt-accuracy', [{ ...emptyTrace('rgba(93, 217, 138, 1)'),  x: pt.map(m => `E${m.epoch}`), y: pt.map(m => m.val_accuracy)  }], layout('Précision (%)'));
+        Plotly.react('pt-speed',    [{ ...emptyTrace('rgba(93, 217, 138, 1)'),  x: pt.map(m => `E${m.epoch}`), y: pt.map(m => m.epoch_duration) }], layout('Durée / epoch (s)'));
+
+        Plotly.react('tf-accuracy', [{ ...emptyTrace('rgba(124, 106, 247, 1)'), x: tf.map(m => `E${m.epoch}`), y: tf.map(m => m.val_accuracy)  }], layout('Précision (%)'));
+        Plotly.react('tf-speed',    [{ ...emptyTrace('rgba(124, 106, 247, 1)'), x: tf.map(m => `E${m.epoch}`), y: tf.map(m => m.epoch_duration) }], layout('Durée / epoch (s)'));
 
         if (isAdmin) {
-            Plotly.react('chart-cpu', [
-                { ...emptyTrace('CPU %', 'rgba(241, 107, 107, 1)'), x: chartData.system.timestamps, y: chartData.system.cpu }
-            ], layout('CPU (%)'));
+            // Remplacement des timestamps par les Epoques pour le CPU/RAM
+            Plotly.react('pt-cpu', [{ ...emptyTrace('rgba(241, 107, 107, 1)'), x: pt.map(m => `E${m.epoch}`), y: pt.map(m => m.cpu_usage) }], layout('CPU (%)'));
+            Plotly.react('pt-ram', [{ ...emptyTrace('rgba(255, 180, 50, 1)'),  x: pt.map(m => `E${m.epoch}`), y: pt.map(m => m.ram_usage) }], layout('RAM (%)'));
+            Plotly.react('tf-cpu', [{ ...emptyTrace('rgba(241, 107, 107, 1)'), x: tf.map(m => `E${m.epoch}`), y: tf.map(m => m.cpu_usage) }], layout('CPU (%)'));
+            Plotly.react('tf-ram', [{ ...emptyTrace('rgba(255, 180, 50, 1)'),  x: tf.map(m => `E${m.epoch}`), y: tf.map(m => m.ram_usage) }], layout('RAM (%)'));
 
-            Plotly.react('chart-ram', [
-                { ...emptyTrace('RAM %', 'rgba(255, 180, 50, 1)'), x: chartData.system.timestamps, y: chartData.system.ram }
-            ], layout('RAM (%)'));
+            // Gérer la réactivation du bouton uniquement si on a de nouvelles données et qu'elles sont terminées
+            if (pt.length > 0 && tf.length > 0) {
+                const isPtDone = pt[pt.length - 1].status === 'completed';
+                const isTfDone = tf[tf.length - 1].status === 'completed';
+
+                if (isPtDone && isTfDone) {
+                    updateTrainButton(false);
+                }
+            }
         }
 
     } catch (e) {
-        console.error("Erreur lors de la récupération des métriques :", e);
+        console.error("Erreur métriques :", e);
     }
 }
 
-// Rafraîchissement toutes les 5 secondes
 fetchMetrics();
 setInterval(fetchMetrics, 5000);
 
@@ -234,22 +199,24 @@ function updateTrainButton(isOngoing) {
     const btn = document.getElementById('btn-train');
     if (isOngoing) {
         btn.disabled = true;
-        btn.innerText = 'Entraînement en cours...';
+        btn.innerText = "Entraînement en cours...";
     } else {
         btn.disabled = false;
-        btn.innerText = 'Lancer l\'entraînement';
+        btn.innerText = "Lancer l'entraînement";
     }
 }
 
 document.getElementById('btn-train').addEventListener('click', async () => {
     try {
-        // Réinitialisation des données du graphe pour ce dataset
-        chartData.tensorflow = { epochs: [], accuracy: [], speed: [] };
-        chartData.pytorch    = { epochs: [], accuracy: [], speed: [] };
-        chartData.system     = { timestamps: [], cpu: [], ram: [] };
-        resetCharts();
+        // Enregistrement des ID obsolètes pour nettoyer l'écran immédiatement
+        if (currentPTData.length > 0) ptStaleRunId = currentPTData[currentPTData.length - 1].run_id;
+        if (currentTFData.length > 0) tfStaleRunId = currentTFData[currentTFData.length - 1].run_id;
 
+        resetCharts();
         updateTrainButton(true);
+
+        document.getElementById('pt-status').innerText = "Initialisation...";
+        document.getElementById('tf-status').innerText = "Initialisation...";
 
         await fetch('http://localhost:8000/models/training', {
             method: 'POST',
@@ -265,7 +232,7 @@ document.getElementById('btn-train').addEventListener('click', async () => {
         });
 
     } catch (e) {
-        console.error("Erreur lors du lancement de l'entraînement :", e);
+        console.error("Erreur lors du lancement :", e);
         updateTrainButton(false);
     }
 });
@@ -279,14 +246,9 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
     try {
         await fetch('http://localhost:8000/users/logout', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'X-API-KEY': '000'
-            }
+            headers: { 'Authorization': `Bearer ${token}`, 'X-API-KEY': '000' }
         });
-    } catch (e) {
-        console.error("Erreur logout :", e);
-    }
+    } catch (e) {}
     localStorage.removeItem('token');
     window.location.href = "/";
 });
