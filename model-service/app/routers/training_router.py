@@ -31,9 +31,12 @@ async def training(request: TrainingRequest, current_user: TokenData = Depends(g
 # ==========================================
 
 @router.get("/results", response_model=List[TrainingResult])
-async def get_results(library: str = Query(..., description="Pytorch ou tensorflow"), current_user: TokenData = Depends(get_current_user)):
+async def get_results(
+        library: str = Query(..., description="Pytorch ou tensorflow"),
+        dataset: str = Query(..., description="Nom du dataset"),
+        current_user: TokenData = Depends(get_current_user)):
     try:
-        results = get_training_results(library)
+        results = get_training_results(library, dataset)
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

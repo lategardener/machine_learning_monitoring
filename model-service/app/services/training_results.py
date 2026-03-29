@@ -13,21 +13,22 @@ from typing import List
 # RÉCUPÉRATION DES  DONNÉES D'ENTRAÎNEMENT #
 # ==========================================
 
-def get_training_results(library: str) -> List[TrainingResult] | None:
+def get_training_results(library: str, dataset: str) -> List[TrainingResult] | None:
 
     # Ouverture de la session à la base de données
     db = SessionLocal()
 
     try:
-        # Récupération du dernier enregistrement pour la librairie spécifiée
-        last = db.query(TrainingLog).filter(TrainingLog.library == library).order_by(desc(TrainingLog.id)).first()
+        # On filtre maintenant par 'library' ET par 'dataset' !
+        last = db.query(TrainingLog).filter(
+            TrainingLog.library == library,
+            TrainingLog.dataset == dataset
+        ).order_by(desc(TrainingLog.id)).first()
 
         if not last:
             return []
 
-        # Tri des résultats par epoch
         epoch = db.query(TrainingLog).filter(TrainingLog.run_id == last.run_id).order_by(desc(TrainingLog.epoch)).all()
-
         # Formatage des résultats pour l'API
         return [
             TrainingResult(
