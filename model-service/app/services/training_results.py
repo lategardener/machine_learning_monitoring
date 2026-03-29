@@ -43,7 +43,8 @@ def get_training_results(library: str) -> List[TrainingResult] | None:
                 epoch_duration=record.epoch_duration,
                 cpu_usage=record.cpu_usage,
                 ram_usage=record.ram_usage,
-                timestamp=record.timestamp
+                timestamp=record.timestamp,
+                status=record.status
             )
             for record in epoch
         ]

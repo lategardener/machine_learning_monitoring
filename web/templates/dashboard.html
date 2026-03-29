@@ -11,7 +11,6 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-logo">
         <img src="/static/images/logo.png" alt="logo">
@@ -23,46 +22,39 @@
     </div>
 </nav>
 
-<!-- BARRE D'ONGLETS DATASETS -->
 <div class="tabs-bar">
     <div class="tabs">
         <button class="tab active" data-dataset="fashion_mnist">Fashion MNIST</button>
         <button class="tab" data-dataset="cifar100">CIFAR-100</button>
     </div>
-
-    <!-- Bouton lancer entraînement (admin uniquement) -->
-    <button class="btn-train" id="btn-train" style="display:none;">
-        Lancer l'entraînement
-    </button>
+    <button class="btn-train" id="btn-train" style="display:none;">Lancer l'entraînement</button>
 </div>
 
-<!-- CONTENU PRINCIPAL -->
-<main class="main">
+<div class="columns">
 
-    <!-- Graphe : Précision du modèle -->
-    <section class="graph-card">
-        <h2>Précision du modèle</h2>
-        <div id="chart-accuracy"></div>
-    </section>
+    <div class="col">
+        <div class="col-header">
+            PyTorch
+            <span id="pt-status" style="font-size: 13px; margin-left: 15px; font-weight: 400; color: #7a7a95;"></span>
+        </div>
+        <div class="graph-card"><div id="pt-accuracy"></div></div>
+        <div class="graph-card"><div id="pt-speed"></div></div>
+        <div class="graph-card admin-only" id="pt-cpu-card" style="display:none;"><div id="pt-cpu"></div></div>
+        <div class="graph-card admin-only" id="pt-ram-card" style="display:none;"><div id="pt-ram"></div></div>
+    </div>
 
-    <!-- Graphe : Vitesse d'exécution -->
-    <section class="graph-card">
-        <h2>Vitesse d'exécution</h2>
-        <div id="chart-speed"></div>
-    </section>
+    <div class="col">
+        <div class="col-header">
+            TensorFlow
+            <span id="tf-status" style="font-size: 13px; margin-left: 15px; font-weight: 400; color: #7a7a95;"></span>
+        </div>
+        <div class="graph-card"><div id="tf-accuracy"></div></div>
+        <div class="graph-card"><div id="tf-speed"></div></div>
+        <div class="graph-card admin-only" id="tf-cpu-card" style="display:none;"><div id="tf-cpu"></div></div>
+        <div class="graph-card admin-only" id="tf-ram-card" style="display:none;"><div id="tf-ram"></div></div>
+    </div>
 
-    <!-- Graphes admin uniquement : CPU et RAM -->
-    <section class="graph-card" id="cpu-section" style="display:none;">
-        <h2>Utilisation CPU <span class="admin-badge">Admin</span></h2>
-        <div id="chart-cpu"></div>
-    </section>
-
-    <section class="graph-card" id="ram-section" style="display:none;">
-        <h2>Utilisation RAM <span class="admin-badge">Admin</span></h2>
-        <div id="chart-ram"></div>
-    </section>
-
-</main>
+</div>
 
 <script src="/static/js/dashboard.js"></script>
 
