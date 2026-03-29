@@ -1,36 +1,40 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const errorMsg = params.get('error');
+    const successMsg = params.get('success');
+    if (errorMsg)   document.getElementById('error').innerText = errorMsg;
+    if (successMsg) document.getElementById('success').innerText = successMsg;
+});
 
-async function Logout(e) {
+async function Login(e) {
     if (e) e.preventDefault();
-    const token = localStorage.getItem('token');
+
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+
+    const formData = new URLSearchParams();
+    formData.append('username', username.value);
+    formData.append('password', password.value);
+
     try {
-        const res = await fetch('http://localhost:8000/users/logout', {
+        const res = await fetch('http://localhost:8000/users/login', {
             method: 'POST',
             headers: {
-                'X-API-KEY': '000',
-                'Authorization': `Bearer ${token}`
-
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-API-KEY': '000'
             },
+            body: formData
         });
         const result = await res.json();
 
         if (res.ok) {
-            localStorage.removeItem('token'); // On nettoie le navigateur
-            window.location.href = "/login";
+            localStorage.setItem('token', result.access_token);
+            window.location.href = "/dashboard";
         } else {
-            const error = "Déconnexion échoué";
-            window.location.href = "/login?error=" + encodeURIComponent(error);
+            window.location.href = "/?error=" + encodeURIComponent("Identifiants incorrects");
         }
 
-    } catch (e) { 
-        window.location.href = "/home?error=Serveur indisponible";
+    } catch (e) {
+        window.location.href = "/?error=" + encodeURIComponent("Serveur indisponible");
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btn-logout');
-    if (btn) {
-        btn.addEventListener('click', async (e) => {
-            Logout(e);
-        });
-    }
-});
