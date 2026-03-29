@@ -15,7 +15,6 @@ TOPICS = [
     "user.login",
     "user.logout",
     "model.training",
-    "model.get_results"
 ]
 Log.metadata.create_all(bind=engine)
 
@@ -81,8 +80,3 @@ for message in consumer:
         db = SessionLocal()
         create_log(log,db)
         print("l'utilisateur " + payload['username'] + " à entrainer le model " + payload['model_version'] + " sur le dataset " + payload['dataset'])
-    if topic == "model.get_results":
-        log = Log(date=datetime.datetime.today().isoformat(), topic=topic, content=payload)
-        db = SessionLocal()
-        create_log(log,db)
-        print("l'utilisateur " + payload['username'] + " à demandé les resultats de la librairie " + payload["librairie"])

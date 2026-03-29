@@ -52,17 +52,7 @@ async def training(request: TrainingRequest, db: Session = Depends(get_db), curr
 async def get_results(
         library: str = Query(..., description="Pytorch ou tensorflow"),
         dataset: str = Query(..., description="Nom du dataset"),
-        db: Session = Depends(get_db),
         current_user: TokenData = Depends(get_current_user)):
-    outbox_entry = Outbox(
-        event_type="model.get_results",
-        payload={
-            "username": current_user.username,
-            "library": library
-        }
-    )
-    db.add(outbox_entry)
-    db.commit()
     try:
         results = get_training_results(library, dataset)
         return results
