@@ -15,7 +15,7 @@ def get_db():
         yield db
     finally:
         db.close()
-# Doit être EXACTEMENT la même que celle du user-service
+
 SECRET_KEY = os.getenv("KEY", "totally-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
@@ -33,7 +33,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         is_blacklisted = db.query(TokenBlacklist).filter(TokenBlacklist.token == token).first()
         if is_blacklisted:
             raise HTTPException(status_code=401, detail="Token revoked. Please login again.")
-        payload = jwt.decode(token, KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("username")
         if username is None:
             raise credentials_exeption
