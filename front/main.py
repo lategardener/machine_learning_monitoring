@@ -26,6 +26,10 @@ async def read_create():
 async def read_home():
     return FileResponse("web/templates/home.html")
 
+@app.get("/dashboard")
+async def read_dashboard():
+    return FileResponse("web/templates/dashboard.html")
+
 @app.get("/")
 async def read_index():
     return FileResponse("web/templates/home.html")

@@ -6,12 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (successMsg) document.getElementById('success').innerText = successMsg;
 });
 
-
 async function Login(e) {
     if (e) e.preventDefault();
 
-    const username = document.getElementById('username')
-    const password = document.getElementById('password')
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
 
     const formData = new URLSearchParams();
     formData.append('username', username.value);
@@ -30,13 +29,12 @@ async function Login(e) {
 
         if (res.ok) {
             localStorage.setItem('token', result.access_token);
-            window.location.href = "/home";
+            window.location.href = "/dashboard";
         } else {
-            const error = "Identifiants incorrects";
-            window.location.href = "/login?error=" + encodeURIComponent(error);
+            window.location.href = "/?error=" + encodeURIComponent("Identifiants incorrects");
         }
 
-    } catch (e) { 
-        window.location.href = "/login?error=Serveur indisponible";
+    } catch (e) {
+        window.location.href = "/?error=" + encodeURIComponent("Serveur indisponible");
     }
 }

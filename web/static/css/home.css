@@ -7,16 +7,21 @@
 
 html, body {
     height: 100%;
+    font-family: 'Sora', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
 }
 
-/* On divise l'écran en dex*/
+/* On divise l'écran en deux */
 .layout {
     display: flex;
     height: 100vh;
 }
 
 h1 {
-    font-size: 28px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
     margin-bottom: 8px;
 }
 
@@ -27,11 +32,12 @@ h1 {
 
 /* Formulaire de connexion et d'inscription à gauche */
 .left {
-    flex: 0 0 480px;
+    flex: 0 0 1000px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 48px 56px;
-    background: #f5f5f5;
+    background: #16161d;
 }
 
 /* Paramétrage de la zone dédiée à la connexion/inscription */
@@ -40,53 +46,122 @@ h1 {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    max-width: 340px;
 }
 
-
 .subtitle {
-    color: #666;
-    margin-bottom: 32px;
+    color: #7a7a95;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.description {
+    color: #7a7a95;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 36px;
 }
 
 .field {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 label {
     display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #7a7a95;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 input {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 13px 16px;
+    background: #1e1e28;
+    border: 1.5px solid #2a2a38;
+    border-radius: 10px;
+    color: #e8e8f0;
+    font-family: 'Sora', sans-serif;
     font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: #7c6af7;
+    box-shadow: 0 0 0 3px rgba(124, 106, 247, 0.2);
+}
+
+input::placeholder {
+    color: #45455a;
 }
 
 .btn-primary {
     width: 100%;
-    padding: 12px;
-    background: #5555ff;
+    padding: 14px;
+    background: #7c6af7;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
+    font-family: 'Sora', sans-serif;
     font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     margin-top: 8px;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    background: #6a58e8;
+    box-shadow: 0 4px 12px rgba(124, 106, 247, 0.3);
 }
 
 .create-link {
-    margin-top: 20px;
+    margin-top: 24px;
     text-align: center;
     font-size: 13px;
+    color: #7a7a95;
+}
+
+.create-link a {
+    color: #a99ef8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.create-link a:hover {
+    text-decoration: underline;
 }
 
 /* Pour afficher la réussite ou l'échec lors de la connexion */
-#error   { color: red;   margin-bottom: 12px; min-height: 20px; }
-#success { color: green; margin-bottom: 12px; min-height: 20px; }
+#error {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    min-height: 20px;
+    color: #f16b6b;
+    background: rgba(241, 107, 107, 0.1);
+    border: 1px solid rgba(241, 107, 107, 0.25);
+    display: none;
+}
+
+#success {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    min-height: 20px;
+    color: #5dd98a;
+    background: rgba(93, 217, 138, 0.1);
+    border: 1px solid rgba(93, 217, 138, 0.25);
+    display: none;
+}
+
+#error:not(:empty)   { display: block; }
+#success:not(:empty) { display: block; }
 
 
 /***********************************/
@@ -96,35 +171,10 @@ input {
 /* Colonne à droite pour l'image */
 .right {
     flex: 1;
-    background: #cccccc;
+    background: linear-gradient(135deg, #7c6af7 0%, #3d2fbf 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
-
-.right-image {
-    text-align: center;
-    color: #666;
-}
-
-/********************************/
-/* Configurations bloc de logo */
-/******************************/
-
-/* Paramétrage de la zone dédiée a notre logo */
-.logo-area {
-    margin-bottom: 64px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.logo-area img {
-    width: 120px;
-    height: auto;
-}
-
-
-
-
-
-
