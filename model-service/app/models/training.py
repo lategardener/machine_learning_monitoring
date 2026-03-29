@@ -32,3 +32,4 @@ class TrainingResult(BaseModel):
     cpu_usage: float | None
     ram_usage: float | None
     timestamp: str
+    status: str

@@ -160,6 +160,11 @@ async function fetchMetrics() {
             return;
         }
 
+        if (!resTF.ok || !resPT.ok) {
+            console.warn("Les services de modèle ne sont pas joignables.");
+            return;
+        }
+
         const dataTF = await resTF.json();
         const dataPT = await resPT.json();
 
@@ -253,7 +258,10 @@ document.getElementById('btn-train').addEventListener('click', async () => {
                 'X-API-KEY': '000',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ dataset: currentDataset })
+            body: JSON.stringify({
+                dataset: currentDataset,
+                model_version: "mlp_v1"
+            })
         });
 
     } catch (e) {

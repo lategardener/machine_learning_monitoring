@@ -41,7 +41,8 @@ def listen_and_save_metrics():
                 epoch_duration=metrics_data["epoch_duration"],
                 timestamp=metrics_data["timestamp"],
                 cpu_usage=metrics_data["cpu_usage"],
-                ram_usage=metrics_data["ram_usage"]
+                ram_usage=metrics_data["ram_usage"],
+                status=metrics_data["status"]
             )
 
             # enregistrement des données
