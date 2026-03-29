@@ -13,6 +13,29 @@ router = APIRouter(prefix="/users")
 
 User.metadata.create_all(bind=engine)
 
+def create_default_users(db: Session):
+    users = [
+        {"username": "marc",    "password": "admin", "role": "admin"},
+        {"username": "sonny",   "password": "admin", "role": "admin"},
+        {"username": "thomas",  "password": "user",  "role": "client"},
+        {"username": "camille", "password": "user",  "role": "client"},
+        {"username": "lucas",   "password": "user",  "role": "client"},
+    ]
+    for u in users:
+        existing = db.query(User).filter(User.username == u["username"]).first()
+        if not existing:
+            db.add(User(
+                username=u["username"],
+                password=hash_password(u["password"]),
+                role=u["role"]
+            ))
+    db.commit()
+
+db = SessionLocal()
+create_default_users(db)
+db.close()
+
+
 class UserCreate(BaseModel):
     username: str
     password: str
