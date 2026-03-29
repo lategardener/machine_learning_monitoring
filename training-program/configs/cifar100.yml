@@ -1,0 +1,35 @@
+# Architecture de différents modèles de deep learning pour la reconnaissance d'images
+# Librairies utilisées: pytorch et tensorflow
+
+dataset:
+  name: cifar100
+  input_shape: [3, 32, 32]
+  num_classes: 100
+
+training:
+    batch_size: 64
+    epochs: 10
+    learning_rate: 0.001
+    validation_split: 0.2
+    shuffle: true
+    random_seed: 42
+    optimizer:
+        type: Adam
+        learning_rate: 0.001
+    metrics:
+        - accuracy
+
+
+models:
+  mlp_v1:
+    description: architecture multi-layer perceptron simple
+    architecture:
+      type: MLP
+      layers:
+        - type: Flatten
+        - type: Dense
+          units: 512
+          activation: relu
+        - type: Dense
+          units: 100
+          activation: softmax
