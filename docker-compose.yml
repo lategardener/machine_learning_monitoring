@@ -192,6 +192,19 @@ services:
       - ./db_user:/app/db_user
     restart: always
 
+  models_producer:
+    build: ./model-service
+    command: python app/services/log_producer.py
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PYTHONPATH: /app
+    volumes:
+      - ./db_models:/app/db_models
+    restart: always
+
 
   # ========================
   # ENTRAÎNEMENT - PYTORCH #

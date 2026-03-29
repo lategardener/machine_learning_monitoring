@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, JSON, Float
 from db_models.database import Base
 import uuid
 
@@ -40,6 +40,12 @@ class TrainingLog(Base):
     # État de l'entraînement
     status = Column(String, nullable=False)
 
+class Outbox(Base):
+    __tablename__ = "outbox"
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String, nullable=False)
+    payload = Column(JSON, nullable=False)
+    published = Column(Boolean, default=False)
 
 class TokenBlacklist(Base):
     __tablename__ = "token_blacklist"
