@@ -40,6 +40,11 @@ L'application est accessible sur `http://localhost:5000`.
 
 ![Architecture](architecture.png)
 
+
+## Exemple de visualisation
+
+![Architecture](exemple.png)
+
 ## Contact
 
 - Marc DJOLE — djolemarc@cy-tech.fr
